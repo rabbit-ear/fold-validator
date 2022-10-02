@@ -48,13 +48,15 @@
 		});
 		// gl.linkProgram(shader.program);
 		// draw elements
+		// WebGL 2 supports UNSIGNED_INT (Uint32Array)
+		// WebGL 1 cannot and must use UNSIGNED_SHORT (Uint16Array)
 		shader.elementArrays.forEach(el => {
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, el.buffer);
 			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, el.data, gl.STATIC_DRAW);
 			gl.drawElements(
 				el.mode, // GL.TRIANGLES for example
 				el.data.length,
-				gl.UNSIGNED_INT, // gl.UNSIGNED_SHORT,
+				version === 2 ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT,
 				el.buffer
 			);
 		});
@@ -171,7 +173,7 @@
 				break;
 			default: break;
 		}
-		shaders.push(...TouchIndicators(gl, version));
+		// shaders.push(...TouchIndicators(gl, version));
 	};
 
 	const deallocShaders = () => {
@@ -219,14 +221,16 @@
 		// optional open gl settings
 
 		// const init = ear.webgl.initialize(canvas, 1); // WebGL version 1
-		const init = ear.webgl.initialize(canvas, 2); // WebGL version 2
+		// const init = ear.webgl.initialize(canvas, 2); // WebGL version 2
+		const init = ear.webgl.initialize(canvas);
 		gl = init.gl;
 		version = init.version;
 		if (!gl) { throw new Error("WebGL could not initialize"); }
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-		// gl.enable(gl.DEPTH_TEST);
+
+		console.log(`using WebGL ${version}`);
 
 		rebuildAllAndDraw();
 		// const animate = () => {

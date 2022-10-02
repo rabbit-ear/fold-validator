@@ -132,16 +132,13 @@ const makeVertexArrays = (gl, graph, program) => {
 	// console.log("bary", barycentric, rawEdges);
 	for (let i = 0; i < rawEdges.length; i += 1) {
 		if (!rawEdges[i][0]) {
-			barycentric[i * 3 + 0][2] = 100;
-			barycentric[i * 3 + 1][2] = 100;
+			barycentric[i * 3 + 0][2] = barycentric[i * 3 + 1][2] = 100;
 		}
 		if (!rawEdges[i][1]) {
-			barycentric[i * 3 + 1][0] = 100;
-			barycentric[i * 3 + 2][0] = 100;
+			barycentric[i * 3 + 1][0] = barycentric[i * 3 + 2][0] = 100;
 		}
 		if (!rawEdges[i][2]) {
-			barycentric[i * 3 + 0][1] = 100;
-			barycentric[i * 3 + 2][1] = 100;
+			barycentric[i * 3 + 0][1] = barycentric[i * 3 + 2][1] = 100;
 		}
 	}
 	// console.log("rawEdges.flat()", new Uint32Array(rawEdges.flat()));
@@ -170,13 +167,17 @@ const makeVertexArrays = (gl, graph, program) => {
 		// 	data: new Float32Array(rawEdges.flat()) },
 	];
 };
-
-const makeElementArrays = (gl, graph) => {
+/**
+ * WebGL 2 can handle Uint32Array. WebGL 1 cannot and must use 16 bit.
+ */
+const makeElementArrays = (gl, version = 1, graph = {}) => {
 	if (!graph || !graph.vertices_coords || !graph.faces_vertices) { return []; }
 	return [{
 		mode: gl.TRIANGLES,
 		buffer: gl.createBuffer(),
-		data: new Uint32Array(graph.faces_vertices.flat()),
+		data: version === 2
+			? new Uint32Array(graph.faces_vertices.flat())
+			: new Uint16Array(graph.faces_vertices.flat()),
 	}];
 };
 
@@ -189,7 +190,7 @@ const WebGLFoldedForm = (gl, version = 1, graph = {}) => {
 	return [{
 		program,
 		vertexArrays: makeVertexArrays(gl, exploded, program),
-		elementArrays: makeElementArrays(gl, exploded),
+		elementArrays: makeElementArrays(gl, version, exploded),
 		flags: [gl.DEPTH_TEST],
 	}];
 };

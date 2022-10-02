@@ -37,7 +37,7 @@
 </script>
 
 <main>
-	<Header />
+	<Header bind:FOLD={FOLD} />
 	<LoadFile bind:FOLD={FOLD} />
 	<TextArea bind:FOLD={FOLD} />
 	<!-- <Result {FOLD} {framesInfo} /> -->
