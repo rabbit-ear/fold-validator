@@ -5,8 +5,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #818386;
+  background-color: #212325;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,7 +23,6 @@ h5 { font-size: 1.0rem; }
 h1, h2, h3, h4, h5 { font-weight: bold; }
 
 a {
-  font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }

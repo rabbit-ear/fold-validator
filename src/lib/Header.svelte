@@ -1,7 +1,7 @@
 <div class="header">
 	<div class="left">
 		<h2>
-			FOLD
+			<a href="https://github.com/edemaine/FOLD/">FOLD</a>
 		</h2>
 		<p>
 			validator and viewer
@@ -9,7 +9,7 @@
 	</div>
 	<div class="right">
 		<p>
-			<a href="https://github.com/edemaine/FOLD/">more info on FOLD format</a>
+			dark / light
 		</p>
 	</div>
 </div>
@@ -23,6 +23,8 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
+		border-bottom: 2px solid #555;
+
 	}
 	.header > div {
 		height: 100%;

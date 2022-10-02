@@ -1,22 +1,15 @@
 <script>
-	export let FOLD = {};
-	export let isEmpty;
 </script>
 
-{#if !isEmpty}
-	<div>
-		<p class="disabled-text">
-			download the modified FOLD file
-		</p>
-		<div class="button-row">
-			<button disabled>download</button>
-		</div>
+<div>
+	<div class="button-row">
+		<button disabled>download</button>
 	</div>
-{/if}
+</div>
 
 <style>
 	div {
-		margin: 1rem 0;
+		margin: 0.5rem 0;
 	}
 	.button-row {
 		display: flex;
