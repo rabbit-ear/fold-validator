@@ -4,42 +4,12 @@ import fragmentShaderV1 from "./shaders-webgl1/3d-model-100.frag?raw";
 import vertexShaderV2 from "./shaders-webgl2/3d-model-300.vert?raw";
 import fragmentShaderV2 from "./shaders-webgl2/3d-model-300.frag?raw";
 
-const triangulate = (indices) => Array.from(Array(indices.length - 2))
-	.map((_, i) => [indices[0], indices[i + 1], indices[i + 2]]);
-
-//   0 = 0
-//   1 = 1
-//  0  = 0
-//  1  = 2
-// 0   = 0
-// 1   = 4
-const triangulateConvexFacesVertices = ({ faces_vertices }) => {
-	return {
-		faces_vertices: faces_vertices
-			.flatMap(vertices => (vertices.length < 4
-				? [vertices]
-				: triangulate(vertices))),
-		// raw_edge: faces_vertices
-		// 	.flatMap(vertices => (vertices.length < 4
-		// 		? [7]
-		// 		: Array.from(Array(vertices.length - 2)).map((_, i) => {
-		// 			if (i === 0) { return 3; }
-		// 			if (i === vertices.length - 2 - 1) { return 6; }
-		// 			return 2;
-		// 		}))),
-		raw_edge: faces_vertices
-			.flatMap(vertices => (vertices.length < 4
-				? [[true, true, true]]
-				: Array.from(Array(vertices.length - 2)).map((_, i) => {
-					if (i === 0) { return [true, true, false]; }
-					if (i === vertices.length - 2 - 1) { return [false, true, true]; }
-					return [false, true, false];
-				}))),
-			map: faces_vertices.flatMap((vertices, f) => (vertices.length < 4
-				? [f]
-				: Array.from(Array(vertices.length - 2)).map(() => f))),
-	};
-};
+import {
+	nudgeVerticesWithFaceOrders,
+	nudgeVerticesWithFacesLayer,
+	nudgeVerticesWithFacesLayerOld,
+	// nudgeVerticesWithFaceOrders2,
+} from "../graph/nudgeVertices";
 
 // add two 3D vectors, store result in first parameter
 const add3 = (a, b) => { a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; };
@@ -58,43 +28,6 @@ const makeFacesNormal = (graph) => graph.faces_vertices.map(fv => {
 const makeFacesPoint = (graph) => graph.faces_vertices
 	.map(fv => graph.vertices_coords[fv[0]]);
 
-const prepare = ({ vertices_coords, faces_vertices, faces_layer }) => {
-	if (!vertices_coords || !faces_vertices) { return; }
-	const triangulated = triangulateConvexFacesVertices({ vertices_coords, faces_vertices });
-	faces_vertices = triangulated.faces_vertices;
-	triangulated.invertedMap = ear.graph.invertMap(triangulated.map);
-	// const polygons = graph.faces_vertices
-	// 	.map(fv => fv.map(v => graph.vertices_coords[v]));
-	const normals = makeFacesNormal({ vertices_coords, faces_vertices });
-	const points = makeFacesPoint({ vertices_coords, faces_vertices });
-	const exploded = ear.graph.explodeFaces({ vertices_coords, faces_vertices });
-	const vertices_face = faces_vertices.flatMap((verts, f) => verts.map(() => f));
-	exploded.faces_rawEdge = triangulated.raw_edge;
-	// console.log("map", triangulated.invertedMap);
-	// console.log("points", points);
-	// console.log("exploded", exploded);
-	// console.log("vertices_face", vertices_face);
-	if (faces_layer) {
-		const layers_face = ear.graph.invertMap(faces_layer);
-		// console.log("layers_face", layers_face);
-		layers_face.forEach((face, layer) => {
-			const faces = triangulated.invertedMap[face].constructor === Array
-				? triangulated.invertedMap[face]
-				: [triangulated.invertedMap[face]];
-			faces.forEach(f => {
-				exploded.faces_vertices[f].forEach(v => {
-					if (exploded.vertices_coords[v][2] === undefined) {
-						exploded.vertices_coords[v][2] = 0;
-					}
-				});
-				exploded.faces_vertices[f].forEach(v => {
-					exploded.vertices_coords[v][2] += 1e-5 * layer;
-				});
-			});
-		});
-	}
-	return exploded;
-};
 
 // idea zone
 
@@ -117,9 +50,9 @@ const makeVertexNormals = (graph) => {
 		.forEach((vertices, f) => vertices
 			.forEach(v => add3(vertices_normals[v], faces_normals[f])));
 	return vertices_normals.map(v => ear.math.normalize3(v));
-}
+};
 
-const makeVertexArrays = (gl, graph, program) => {
+const makeVertexArrays = (gl, program, graph, change) => {
 	if (!graph || !graph.vertices_coords || !graph.faces_vertices) { return []; }
 	const vertices_coords = graph.vertices_coords
 		.map(coord => [...coord].concat(Array(3 - coord.length).fill(0)));
@@ -127,17 +60,22 @@ const makeVertexArrays = (gl, graph, program) => {
 	const barycentric = vertices_coords
 		.map((_, i) => i % 3)
 		.map(n => [n === 0 ? 1 : 0, n === 1 ? 1 : 0, n === 2 ? 1 : 0]);
-	// const rawEdges = graph.faces_rawEdge.flatMap(n => [n, n, n]);
-	const rawEdges = graph.faces_rawEdge;
-	// console.log("bary", barycentric, rawEdges);
-	for (let i = 0; i < rawEdges.length; i += 1) {
-		if (!rawEdges[i][0]) {
+	// // const rawEdges = graph.faces_rawEdge.flatMap(n => [n, n, n]);
+	// const rawEdges = graph.faces_rawEdge;
+	// // console.log("bary", barycentric, rawEdges);
+	const facesEdgesIsJoined = graph.faces_edges
+		.map(edges => edges
+			.map(e => graph.edges_assignment[e])
+			.map(a => a === "J" || a === "j"));
+
+	for (let i = 0; i < facesEdgesIsJoined.length; i += 1) {
+		if (facesEdgesIsJoined[i][0]) {
 			barycentric[i * 3 + 0][2] = barycentric[i * 3 + 1][2] = 100;
 		}
-		if (!rawEdges[i][1]) {
+		if (facesEdgesIsJoined[i][1]) {
 			barycentric[i * 3 + 1][0] = barycentric[i * 3 + 2][0] = 100;
 		}
-		if (!rawEdges[i][2]) {
+		if (facesEdgesIsJoined[i][2]) {
 			barycentric[i * 3 + 0][1] = barycentric[i * 3 + 2][1] = 100;
 		}
 	}
@@ -182,14 +120,25 @@ const makeElementArrays = (gl, version = 1, graph = {}) => {
 };
 
 const WebGLFoldedForm = (gl, version = 1, graph = {}) => {
-	const exploded = prepare(graph);
-	// console.log("WebGLFoldedForm", exploded);
+	const exploded = JSON.parse(JSON.stringify(graph));
+	const change = ear.graph.triangulate(exploded);
+	const change2 = ear.graph.explode(exploded);
+	Object.assign(change, change2);
+	console.log("change", change);
+
+	if (exploded.faces_layer) {
+		nudgeVerticesWithFacesLayer(exploded, change);
+	}
+	// if (exploded.faceOrders) {
+	// 	nudgeVerticesWithFaceOrders2(exploded, change);
+	// }
+
 	const program = version == 2
 		? ear.webgl.createProgram(gl, vertexShaderV2, fragmentShaderV2)
 		: ear.webgl.createProgram(gl, vertexShaderV1, fragmentShaderV1);
 	return [{
 		program,
-		vertexArrays: makeVertexArrays(gl, exploded, program),
+		vertexArrays: makeVertexArrays(gl, program, exploded, change),
 		elementArrays: makeElementArrays(gl, version, exploded),
 		flags: [gl.DEPTH_TEST],
 	}];

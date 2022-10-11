@@ -8,7 +8,7 @@
 	export let origami = {};
 	export let perspective = "orthographic";
 	export let viewClass = "creasePattern";
-	export let fov = 45;
+	export let fov = 30;
 	export let strokeWidth = 0.0025;
 	export let opacity = 1.0;
 	let dragSpeed = 3.0;
@@ -120,7 +120,7 @@
 	const makeProjectionMatrix = () => {
 		if (!canvas) { return ear.math.identity4x4; }
 		const Z_NEAR = 0.1;
-		const Z_FAR = 2;
+		const Z_FAR = 3;
 		const ORTHO_FAR = -100;
 		const ORTHO_NEAR = 100;
 		const canvasDimensions = [canvas.clientWidth, canvas.clientHeight];
@@ -132,7 +132,7 @@
 			: ear.math.makePerspectiveMatrix4(fov * Math.PI / 180, canvasDimensions[0] / canvasDimensions[1], Z_NEAR, Z_FAR);
 	};
 
-	const makeViewMatrix = () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1, 1];
+	const makeViewMatrix = () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.85, 1];
 	// const makeViewMatrix = () => ear.math.invertMatrix4(ear.math.makeLookAtMatrix4([0, 0, 1], [0, 0, 0], [0, 1, 1]));
 	/**
 	 * @description build an aspect-fit model matrix (possibly an inverse-model matrix)

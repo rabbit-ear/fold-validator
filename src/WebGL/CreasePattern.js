@@ -18,7 +18,7 @@ const make2D = (coords) => coords
 	.map(coord => [0, 1]
 		.map(i => coord[i] || 0));
 
-const makeEdgesVertexArrays = (gl, graph, program) => {
+const makeEdgesVertexArrays = (gl, program, graph) => {
 	if (!graph || !graph.vertices_coords || !graph.edges_vertices) { return []; }
 	const vertices_coords = make2D(graph.edges_vertices
 		.flatMap(edge => edge
@@ -78,7 +78,7 @@ const makeEdgesElementArrays = (gl, version = 1, graph = {}) => {
 	}];
 };
 
-const makeFacesVertexArrays = (gl, graph, program) => {
+const makeFacesVertexArrays = (gl, program, graph) => {
 	if (!graph || !graph.vertices_coords) { return []; }
 	const vertices_color = graph.vertices_coords.map(() => [0.11, 0.11, 0.11]);
 	return [
@@ -111,7 +111,7 @@ const cpFacesV1 = (gl, version = 1, graph = {}) => {
 	const program = ear.webgl.createProgram(gl, vertexSimpleV1, fragmentSimpleV1);
 	return {
 		program,
-		vertexArrays: makeFacesVertexArrays(gl, graph, program),
+		vertexArrays: makeFacesVertexArrays(gl, program, graph),
 		elementArrays: makeFacesElementArrays(gl, version, graph),
 		flags: [],
 	};
@@ -121,7 +121,7 @@ const cpEdgesV1 = (gl, version = 1, graph = {}) => {
 	const program = ear.webgl.createProgram(gl, vertexThickEdgesV1, fragmentSimpleV1);
 	return {
 		program,
-		vertexArrays: makeEdgesVertexArrays(gl, graph, program),
+		vertexArrays: makeEdgesVertexArrays(gl, program, graph),
 		elementArrays: makeEdgesElementArrays(gl, version, graph),
 		flags: [],
 	};
@@ -131,7 +131,7 @@ const cpFacesV2 = (gl, version = 1, graph = {}) => {
 	const program = ear.webgl.createProgram(gl, vertexSimpleV2, fragmentSimpleV2);
 	return {
 		program,
-		vertexArrays: makeFacesVertexArrays(gl, graph, program),
+		vertexArrays: makeFacesVertexArrays(gl, program, graph),
 		elementArrays: makeFacesElementArrays(gl, version, graph),
 		flags: [],
 	};
@@ -141,7 +141,7 @@ const cpEdgesV2 = (gl, version = 1, graph = {}) => {
 	const program = ear.webgl.createProgram(gl, vertexThickEdgesV2, fragmentSimpleV2);
 	return {
 		program,
-		vertexArrays: makeEdgesVertexArrays(gl, graph, program),
+		vertexArrays: makeEdgesVertexArrays(gl, program, graph),
 		elementArrays: makeEdgesElementArrays(gl, version, graph),
 		flags: [],
 	};

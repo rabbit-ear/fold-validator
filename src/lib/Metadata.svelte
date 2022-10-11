@@ -1,5 +1,9 @@
 <script>
-	import { findNonSpecKeys } from "../graph/misc";
+	import {
+		findSpecGeometryKeys,
+		findSpecOrderKeys,
+		findNonSpecKeys,
+	} from "../graph/misc";
 	export let FOLD = {};
 	export let frames = [];
 	export let selectedFrame = 0;
@@ -7,7 +11,15 @@
 	$: frame = frames[selectedFrame];
 	let nonSpecKeys = [];
 	$: nonSpecKeys = findNonSpecKeys(frames[selectedFrame]);
+	let geometryKeys = [];
+	$: geometryKeys = findSpecGeometryKeys(frames[selectedFrame]);
+	let orderKeys = [];
+	$: orderKeys = findSpecOrderKeys(frames[selectedFrame]);
 </script>
+
+<h3>
+	file metadata
+</h3>
 
 {#if FOLD.file_spec}
 	<p>FOLD spec version: <span class="value">{FOLD.file_spec}</span></p>
@@ -87,6 +99,26 @@
 	</div>
 {/if}
 
+<!-- 
+{#if geometryKeys.length}
+	<p>
+		geometry:
+		{#each geometryKeys as key}
+			<span class="pill">{key}</span>
+		{/each}
+	</p>
+{/if}
+ -->
+<!-- 
+{#if orderKeys.length}
+	<p>
+		orders:
+		{#each orderKeys as key}
+			<span class="pill">{key}</span>
+		{/each}
+	</p>
+{/if}
+ -->
 {#if nonSpecKeys.length}
 	<p>
 		non-spec keys:
@@ -101,16 +133,10 @@
 		non spec keys
  -->
 
-<!-- <div>
-	<p>
-		<span>epsilon</span><input type="text" /><button>auto-detect</button>
-	</p>
-</div> -->
-<hr />
-
 <style>
 	p {
 		line-height: 1.5rem;
+		word-break: break-word;
 	}
 	.value {
 		font-weight: bold;

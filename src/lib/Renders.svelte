@@ -1,9 +1,12 @@
 <script>
-	import ear from "rabbit-ear";
+	// import ear from "rabbit-ear";
+	import { findRenderStyle } from "../graph/misc";
 	import WebGL from "../WebGLView/WebGLView.svelte";
 	
 	export let frame = {};
 	export let frameInfo;
+	let renderStyle; // "foldedForm" or "creasePattern"
+	$: renderStyle = findRenderStyle(frame);
 
 	const renderOptions = {
 		viewBox: true,
@@ -41,18 +44,18 @@
 
 </script>
 
-{#if frameInfo.viewClass !== undefined}
+{#if renderStyle !== undefined}
 	<div class="row webgl">
 		<WebGL
 			origami={frame}
-			perspective={frameInfo.viewClass === "foldedForm"
+			perspective={renderStyle === "foldedForm"
 				? "perspective"
 				: "orthographic"}
-			viewClass={frameInfo.viewClass}
+			viewClass={renderStyle}
 			strokeWidth={frameInfo.vmin/200} />
 	</div>
 	<div class="row">
-		<p>{formatViewClass(frameInfo.viewClass)}</p>
+		<p>{formatViewClass(renderStyle)}</p>
 	</div>
 {/if}
 

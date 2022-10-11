@@ -3,7 +3,10 @@
 	export let FOLD = {};
 
 	const fileDialogDidLoad = (string, filename, mimeType) => {
-		try { FOLD = JSON.parse(string); }
+		try {
+			FOLD = JSON.parse(string);
+			selectedFrame = 0;
+		}
 		catch (error) { window.alert(error); }
 	};
 

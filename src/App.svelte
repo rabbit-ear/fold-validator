@@ -1,6 +1,7 @@
 <script>
 	import ear from "rabbit-ear";
 	import Header from "./lib/Header.svelte";
+	import Examples from "./lib/Examples.svelte";
 	import LoadFile from "./lib/LoadFile.svelte";
 	import TextArea from "./lib/TextArea.svelte";
 	import Result from "./lib/Result.svelte";
@@ -37,7 +38,8 @@
 </script>
 
 <main>
-	<Header bind:FOLD={FOLD} />
+	<Header />
+	<Examples bind:FOLD={FOLD} bind:selectedFrame={selectedFrame} />
 	<LoadFile bind:FOLD={FOLD} />
 	<TextArea bind:FOLD={FOLD} />
 	<!-- <Result {FOLD} {framesInfo} /> -->
@@ -47,7 +49,9 @@
 	{#if !isEmpty}
 		<Errors {validation} />
 		<div class="left">
+			<hr />
 			<Metadata {FOLD} {frames} bind:selectedFrame={selectedFrame} />
+			<hr />
 		</div>
 		<Renders
 			frame={frames[selectedFrame]}
@@ -61,6 +65,7 @@
 <style>
 	.left {
 		text-align: left;
+		max-width: 75vw;
 	}
 	main {
 		display: flex;

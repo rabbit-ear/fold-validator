@@ -1,6 +1,6 @@
 <div>
 	<p>fold validator (c) 2022</p>
-	<p>contribute to the <a href="https://github.com">source code</a></p>
+	<p>contribute to the <a href="https://github.com/robbykraft/fold-validator">source code</a></p>
 </div>
 
 <style>

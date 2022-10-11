@@ -1,8 +1,3 @@
-<script>
-	export let FOLD = {};
-	import Examples from "./Examples.svelte";
-</script>
-
 <div class="header">
 	<div class="left">
 		<h2>
@@ -13,7 +8,6 @@
 		</p>
 	</div>
 	<div class="right">
-		<Examples bind:FOLD={FOLD} />
 		<!-- <p>
 			dark / light
 		</p> -->
@@ -23,7 +17,7 @@
 <style>
 	.header {
 		width: 100vw;
-		height: 3rem;
+		min-height: 3rem;
 		background-color: #1b1b1b;
 		display: flex;
 		flex-direction: row;
