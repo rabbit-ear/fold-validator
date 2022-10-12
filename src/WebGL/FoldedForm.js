@@ -3,31 +3,19 @@ import vertexShaderV1 from "./shaders-webgl1/3d-model-100.vert?raw";
 import fragmentShaderV1 from "./shaders-webgl1/3d-model-100.frag?raw";
 import vertexShaderV2 from "./shaders-webgl2/3d-model-300.vert?raw";
 import fragmentShaderV2 from "./shaders-webgl2/3d-model-300.frag?raw";
-
 import {
 	nudgeVerticesWithFaceOrders,
 	nudgeVerticesWithFacesLayer,
-	nudgeVerticesWithFacesLayerOld,
-	// nudgeVerticesWithFaceOrders2,
 } from "../graph/nudgeVertices";
 
-// add two 3D vectors, store result in first parameter
-const add3 = (a, b) => { a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; };
+// const Z_SPACE = 1e-5;
+const Z_SPACE = 2e-5;
 
-const makeFacesNormal = (graph) => graph.faces_vertices.map(fv => {
-	const p0 = graph.vertices_coords[fv[0]];
-	const p1 = graph.vertices_coords[fv[1]];
-	const p2 = graph.vertices_coords[fv[2]];
-	const vec1 = ear.math.resize(3, ear.math.subtract(p1, p0));
-	const vec2 = ear.math.resize(3, ear.math.subtract(p2, p0));
-	return ear.math.normalize3(ear.math.cross3(vec1, vec2));
-});
 /**
  * get one point from each face
  */
 const makeFacesPoint = (graph) => graph.faces_vertices
 	.map(fv => graph.vertices_coords[fv[0]]);
-
 
 // idea zone
 
@@ -43,6 +31,9 @@ const makeFacesPoint = (graph) => graph.faces_vertices
 
 // If you don’t use an index buffer, gl_PrimitiveID can be derived in the vertex shader as (gl_VertexID / 3) (for triangles) in the vertex shader and sent to the pixel shader.
 
+// add two 3D vectors, store result in first parameter
+const add3 = (a, b) => { a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; };
+
 const makeVertexNormals = (graph) => {
 	const faces_normals = ear.graph.makeFacesNormal(graph);
 	const vertices_normals = graph.vertices_coords.map(() => [0, 0, 0]);
@@ -52,7 +43,7 @@ const makeVertexNormals = (graph) => {
 	return vertices_normals.map(v => ear.math.normalize3(v));
 };
 
-const makeVertexArrays = (gl, program, graph, change) => {
+const makeVertexArrays = (gl, program, graph, change, options = {}) => {
 	if (!graph || !graph.vertices_coords || !graph.faces_vertices) { return []; }
 	const vertices_coords = graph.vertices_coords
 		.map(coord => [...coord].concat(Array(3 - coord.length).fill(0)));
@@ -68,15 +59,17 @@ const makeVertexArrays = (gl, program, graph, change) => {
 			.map(e => graph.edges_assignment[e])
 			.map(a => a === "J" || a === "j"));
 
-	for (let i = 0; i < facesEdgesIsJoined.length; i += 1) {
-		if (facesEdgesIsJoined[i][0]) {
-			barycentric[i * 3 + 0][2] = barycentric[i * 3 + 1][2] = 100;
-		}
-		if (facesEdgesIsJoined[i][1]) {
-			barycentric[i * 3 + 1][0] = barycentric[i * 3 + 2][0] = 100;
-		}
-		if (facesEdgesIsJoined[i][2]) {
-			barycentric[i * 3 + 0][1] = barycentric[i * 3 + 2][1] = 100;
+	if (!options.showTrianglulation) {
+		for (let i = 0; i < facesEdgesIsJoined.length; i += 1) {
+			if (facesEdgesIsJoined[i][0]) {
+				barycentric[i * 3 + 0][2] = barycentric[i * 3 + 1][2] = 100;
+			}
+			if (facesEdgesIsJoined[i][1]) {
+				barycentric[i * 3 + 1][0] = barycentric[i * 3 + 2][0] = 100;
+			}
+			if (facesEdgesIsJoined[i][2]) {
+				barycentric[i * 3 + 0][1] = barycentric[i * 3 + 2][1] = 100;
+			}
 		}
 	}
 	// console.log("rawEdges.flat()", new Uint32Array(rawEdges.flat()));
@@ -119,27 +112,49 @@ const makeElementArrays = (gl, version = 1, graph = {}) => {
 	}];
 };
 
-const WebGLFoldedForm = (gl, version = 1, graph = {}) => {
+const WebGLFoldedForm = (gl, version = 1, graph = {}, options = {}) => {
 	const exploded = JSON.parse(JSON.stringify(graph));
+	// we render "J" joined edges differently from all others. if edges_assignment
+	// doesn't exist, make it with all assignments set to "U".
+	// the user will never see this data, it's just for visualization.
+	if (!exploded.edges_assignment) {
+		const edgeCount = ear.graph.count.edges(graph) || ear.graph.countImplied.edges(graph);
+		exploded.edges_assignment = Array(edgeCount).fill("U");
+	}
+	let faces_nudge = [];
+	if (exploded.faceOrders) {
+		faces_nudge = nudgeVerticesWithFaceOrders(exploded);
+	}
+	else if (exploded.faces_layer) {
+		faces_nudge = nudgeVerticesWithFacesLayer(exploded);
+	}
+	// console.log("faces_nudge", faces_nudge);
 	const change = ear.graph.triangulate(exploded);
 	const change2 = ear.graph.explode(exploded);
 	Object.assign(change, change2);
-	console.log("change", change);
+	// console.log("change", change);
 
-	if (exploded.faces_layer) {
-		nudgeVerticesWithFacesLayer(exploded, change);
+	if (change.faces) {
+		change.faces.map.forEach((oldFace, face) => {
+			const nudge = faces_nudge[oldFace];
+			if (!nudge) { return; }
+			exploded.faces_vertices[face].forEach(v => {
+				const vec = ear.math.scale(nudge.vector, nudge.layer * Z_SPACE);
+				exploded.vertices_coords[v] = ear.math.add(
+					ear.math.resize(3, exploded.vertices_coords[v]),
+					vec,
+				);
+			});
+		});
 	}
-	// if (exploded.faceOrders) {
-	// 	nudgeVerticesWithFaceOrders2(exploded, change);
-	// }
 
 	const program = version == 2
 		? ear.webgl.createProgram(gl, vertexShaderV2, fragmentShaderV2)
 		: ear.webgl.createProgram(gl, vertexShaderV1, fragmentShaderV1);
 	return [{
 		program,
-		vertexArrays: makeVertexArrays(gl, program, exploded, change),
-		elementArrays: makeElementArrays(gl, version, exploded),
+		vertexArrays: makeVertexArrays(gl, program, exploded, change, options),
+		elementArrays: makeElementArrays(gl, version, exploded, options),
 		flags: [gl.DEPTH_TEST],
 	}];
 };
