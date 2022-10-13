@@ -22,14 +22,17 @@
 			<span>{frameInfo.verticesDimensions.map(n => `${n}D`).join(" & ")} vertices,</span>
 		{/if}
 		{#if frameInfo.bounds}
-			dimensions: {formatDimensions(frameInfo.bounds.span)}
+			bounds: {formatDimensions(frameInfo.bounds.span)}
 		{/if}
 	</p>
 	<p>
 		{frameInfo.count.vertices} vertices,
 		{frameInfo.count.edges} edges,
-		{frameInfo.count.faces} faces,
-		{frameInfo.count.faceOrders} layer orders
+		{frameInfo.count.faces} faces
+	</p>
+	<p>
+		{frameInfo.count.faceOrders} face layer orders,
+		{frameInfo.count.edgeOrders} edge layer orders
 	</p>
 </div>
 
@@ -37,5 +40,6 @@
 div {
 	text-align: left;
 	margin: auto;
+	margin-bottom: 1rem;
 }
 </style>

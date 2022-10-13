@@ -17,24 +17,20 @@
 	$: orderKeys = findSpecOrderKeys(frames[selectedFrame]);
 </script>
 
-<h3>
-	file metadata
-</h3>
-
 {#if FOLD.file_spec}
 	<p>FOLD spec version: <span class="value">{FOLD.file_spec}</span></p>
 {/if}
 
-{#if FOLD.file_creator}
-	<p>creator: <span class="value">{FOLD.file_creator}</span></p>
+{#if FOLD.file_title}
+	<p>title: <span class="value">{FOLD.file_title}</span></p>
 {/if}
 
 {#if FOLD.file_author}
 	<p>author: <span class="value">{FOLD.file_author}</span></p>
 {/if}
 
-{#if FOLD.file_title}
-	<p>title: <span class="value">{FOLD.file_title}</span></p>
+{#if FOLD.file_creator}
+	<p>creator: <span class="value">{FOLD.file_creator}</span></p>
 {/if}
 
 {#if FOLD.file_description}
@@ -50,18 +46,20 @@
 	</p>
 {/if}
 
+<!-- <hr /> -->
+
 <!--
 {#if FOLD.file_frames}
 	<p>frames: <span class="value">{FOLD.file_frames.length}</span></p>
 {/if}
  -->
 
-{#if frame.frame_author}
-	<p>author: <span class="value">{frame.frame_author}</span></p>
-{/if}
-
 {#if frame.frame_title}
 	<p>title: <span class="value">{frame.frame_title}</span></p>
+{/if}
+
+{#if frame.frame_author}
+	<p>author: <span class="value">{frame.frame_author}</span></p>
 {/if}
 
 {#if frame.frame_description}
@@ -123,7 +121,7 @@
 	<p>
 		non-spec keys:
 		{#each nonSpecKeys as key}
-			<span class="pill">{key}</span>
+			<span class="pill warning">{key}</span>
 		{/each}
 	</p>
 {/if}
@@ -148,5 +146,9 @@
 		color: #ccc;
 		border-radius: 0.75rem;
 		padding: 0 0.5rem;
+	}
+	.warning {
+		background-color: #46493c;
+		color: #fb4;
 	}
 </style>

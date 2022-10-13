@@ -9,7 +9,7 @@ import {
 } from "../graph/nudgeVertices";
 
 // const Z_SPACE = 1e-5;
-const Z_SPACE = 2e-5;
+const Z_SPACE = 12e-6;
 
 /**
  * get one point from each face

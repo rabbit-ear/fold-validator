@@ -2,7 +2,7 @@
 	"file_spec": 1.1,
 	"file_author": "Kraft",
 	"file_classes": ["singleModel"],
-	"frame_title": "recursive fold",
+	"frame_title": "nested frame inheritance example",
 	"frame_attributes": ["3D"],
 	"frame_classes": ["creasePattern"],
 	"vertices_coords": [[0,0,0], [1,0,0], [1,1,0], [0,1,0]],
@@ -19,7 +19,6 @@
 			"faces_vertices": [[0,1,2], [2,3,0]]
 		},
 		{
-			"frame_classes": ["foldedForm"],
 			"frame_parent": 1,
 			"frame_inherit": true,
 			"vertices_coords": [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0.5,0.5,0]],
@@ -28,19 +27,16 @@
 			"faces_vertices": [[0,1,4], [1,2,4], [2,3,4], [3,0,4]]
 		},
 		{
-			"frame_classes": ["foldedForm"],
 			"frame_parent": 2,
 			"frame_inherit": true,
 			"vertices_coords": [[0,0,0], [1,0,0], [0.5,0.5,1], [0,1,0], [0.5,0.5,0]]
 		},
 		{
-			"frame_classes": ["foldedForm"],
 			"frame_parent": 2,
 			"frame_inherit": true,
 			"vertices_coords": [[0,0,0], [0.5,0.5,1], [1,1,0], [0,1,0], [0.5,0.5,0]]
 		},
 		{
-			"frame_classes": ["foldedForm"],
 			"frame_parent": 3,
 			"frame_inherit": true,
 			"vertices_coords": [[0,0,0], [0,1,0], [0.5,0.5,1], [0,1,0], [0.5,0.5,0]]

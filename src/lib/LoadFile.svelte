@@ -1,6 +1,7 @@
 <script>
 	let files;
 	export let FOLD = {};
+	export let selectedFrame;
 
 	const fileDialogDidLoad = (string, filename, mimeType) => {
 		try {

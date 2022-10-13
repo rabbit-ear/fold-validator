@@ -5,6 +5,7 @@
 	import LoadFile from "./lib/LoadFile.svelte";
 	import TextArea from "./lib/TextArea.svelte";
 	import Result from "./lib/Result.svelte";
+	import Validity from "./lib/Validity.svelte";
 	import Errors from "./lib/Errors.svelte";
 	import Metadata from "./lib/Metadata.svelte";
 	import Analysis from "./lib/Analysis.svelte";
@@ -38,26 +39,25 @@
 </script>
 
 <main>
-	<Header />
 	<Examples bind:FOLD={FOLD} bind:selectedFrame={selectedFrame} />
-	<LoadFile bind:FOLD={FOLD} />
-	<TextArea bind:FOLD={FOLD} />
+	<Header />
+	<LoadFile bind:FOLD={FOLD} bind:selectedFrame={selectedFrame} />
+	<TextArea bind:FOLD={FOLD} bind:selectedFrame={selectedFrame} />
 	<!-- <Result {FOLD} {framesInfo} /> -->
 	{#if false}
 		<Download />
 	{/if}
 	{#if !isEmpty}
-		<Errors {validation} />
+		<Validity {validation} />
 		<div class="left">
-			<hr />
 			<Metadata {FOLD} {frames} bind:selectedFrame={selectedFrame} />
-			<hr />
 		</div>
 		<Renders
 			frame={frames[selectedFrame]}
 			frameInfo={framesInfo[selectedFrame]}
 		/>
 		<Analysis {fileInfo} frameInfo={framesInfo[selectedFrame]} />
+		<Errors {validation} />
 	{/if}
 	<Footer />
 </main>

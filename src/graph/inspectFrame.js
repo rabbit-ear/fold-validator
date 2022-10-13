@@ -1,8 +1,8 @@
 import ear from "rabbit-ear";
 
-const getSortedEdgesLength = (graph) => {
-	const lengths = ear.graph.makeEdgesLength(graph).sort();
-};
+// const getSortedEdgesLength = (graph) => {
+// 	const lengths = ear.graph.makeEdgesLength(graph).sort();
+// };
 
 const getVerticesDimensions = (graph) => {
 	if (!graph || !graph.vertices_coords) { return []; }
@@ -20,12 +20,13 @@ const inspectFrame = (graph, epsilon) => {
 	const duplicateEdges = ear.graph.getDuplicateEdges(graph);
 	const circularEdges = ear.graph.getCircularEdges(graph);
 	const isolatedVertices = ear.graph.getIsolatedVertices(graph);
-	const duplicateVertices = ear.graph.getDuplicateVertices(graph, epsilon);
+	const duplicateVertices = []; // ear.graph.getDuplicateVertices(graph, epsilon);
 	const count = {
 		vertices: ear.graph.count.vertices(graph),
 		edges: ear.graph.count.edges(graph),
 		faces: ear.graph.count.faces(graph),
 		faceOrders: (graph.faceOrders ? graph.faceOrders.length : 0),
+		edgeOrders: (graph.edgeOrders ? graph.edgeOrders.length : 0),
 	};
 	const references = {
 		vertices: count.vertices >= ear.graph.countImplied.vertices(graph),
