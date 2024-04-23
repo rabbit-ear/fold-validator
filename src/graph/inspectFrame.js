@@ -14,24 +14,24 @@ const getVerticesDimensions = (graph) => {
 };
 
 const inspectFrame = (graph, epsilon) => {
-	const bounds = ear.graph.getBoundingBox(graph);
+	const bounds = ear.graph.boundingBox(graph);
 	// vmin is the minimum of only the 2D coordinates
 	const vmin = bounds ? Math.min(bounds.span[0], bounds.span[1]) : 0;
-	const duplicateEdges = ear.graph.getDuplicateEdges(graph);
-	const circularEdges = ear.graph.getCircularEdges(graph);
-	const isolatedVertices = ear.graph.getIsolatedVertices(graph);
+	const duplicateEdges = ear.graph.duplicateEdges(graph);
+	const circularEdges = ear.graph.circularEdges(graph);
+	const isolatedVertices = ear.graph.isolatedVertices(graph);
 	const duplicateVertices = []; // ear.graph.getDuplicateVertices(graph, epsilon);
 	const count = {
-		vertices: ear.graph.count.vertices(graph),
-		edges: ear.graph.count.edges(graph),
-		faces: ear.graph.count.faces(graph),
+		vertices: ear.graph.countVertices(graph),
+		edges: ear.graph.countEdges(graph),
+		faces: ear.graph.countFaces(graph),
 		faceOrders: (graph.faceOrders ? graph.faceOrders.length : 0),
 		edgeOrders: (graph.edgeOrders ? graph.edgeOrders.length : 0),
 	};
 	const references = {
-		vertices: count.vertices >= ear.graph.countImplied.vertices(graph),
-		edges: count.edges >= ear.graph.countImplied.edges(graph),
-		faces: count.faces >= ear.graph.countImplied.faces(graph),
+		vertices: count.vertices >= ear.graph.countImpliedVertices(graph),
+		edges: count.edges >= ear.graph.countImpliedEdges(graph),
+		faces: count.faces >= ear.graph.countImpliedFaces(graph),
 	};
 
 	return {
