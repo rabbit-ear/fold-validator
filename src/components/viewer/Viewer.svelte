@@ -1,7 +1,9 @@
 <script lang="ts">
 	import WebGLCanvas from "./WebGLCanvas.svelte";
 	import Settings from "./Settings.svelte";
-	import { Frame } from "../../stores/file.ts";
+	import {
+		Frame,
+	} from "../../stores/file.ts";
 	import {
 		Perspective,
 		FrameClass,
@@ -20,6 +22,8 @@
 </div>
 
 <style>
+	/* 3rem is the header height */
+	/* 3px to fix the annoying canvas overspil thing that always seems to happen */
 	div {
 		height: calc(100vh - 3rem - 3px);
 	}

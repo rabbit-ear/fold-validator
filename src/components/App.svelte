@@ -11,7 +11,6 @@
 <main>
 	<DragAndDrop />
 	<Header bind:appMode={appMode} />
-
 	{#if appMode === AppMode.Validator}
 		<Validator />
 	{:else if appMode === AppMode.Viewer}

@@ -13,3 +13,9 @@ export enum AppMode {
 	Validator,
 	Viewer,
 };
+
+export type GLCanvasUIEvent = (MouseEvent | TouchEvent) & {
+	point?: [number, number],
+	vector?: [number, number],
+	deltaY?: number,
+};

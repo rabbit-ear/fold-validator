@@ -1,10 +1,12 @@
 <script>
-	import { Fold } from "../../stores/file.ts";
 	import {
-		findSpecGeometryKeys,
-		findSpecOrderKeys,
-		findNonSpecKeys,
-	} from "../../graph/misc";
+		Fold,
+	} from "../../stores/file.ts";
+	// import {
+	// 	findSpecGeometryKeys,
+	// 	findSpecOrderKeys,
+	// 	findNonSpecKeys,
+	// } from "../../graph/misc";
 	// export let FOLD = {};
 	// export let frames = [];
 	// export let selectedFrame = 0;
@@ -18,117 +20,121 @@
 	// $: orderKeys = findSpecOrderKeys(frames[selectedFrame]);
 </script>
 
-{#if $Fold && $Fold.file_spec}
-	<p>FOLD spec version: <span class="value">{$Fold.file_spec}</span></p>
-{/if}
+<div>
+	<h3>file metadata</h3>
 
-{#if $Fold && $Fold.file_title}
-	<p>title: <span class="value">{$Fold.file_title}</span></p>
-{/if}
+	{#if $Fold && $Fold.file_spec}
+		<p>FOLD spec version: <span class="value">{$Fold.file_spec}</span></p>
+	{/if}
 
-{#if $Fold && $Fold.file_author}
-	<p>author: <span class="value">{$Fold.file_author}</span></p>
-{/if}
+	{#if $Fold && $Fold.file_title}
+		<p>title: <span class="value">{$Fold.file_title}</span></p>
+	{/if}
 
-{#if $Fold && $Fold.file_creator}
-	<p>creator: <span class="value">{$Fold.file_creator}</span></p>
-{/if}
+	{#if $Fold && $Fold.file_author}
+		<p>author: <span class="value">{$Fold.file_author}</span></p>
+	{/if}
 
-{#if $Fold && $Fold.file_description}
-	<p>description: <span class="value">{$Fold.file_description}</span></p>
-{/if}
+	{#if $Fold && $Fold.file_creator}
+		<p>creator: <span class="value">{$Fold.file_creator}</span></p>
+	{/if}
 
-{#if $Fold && $Fold.file_classes}
-	<p>
-		file classes:
-		{#each $Fold.file_classes as str}
-			<span class="pill">{str}</span>
-		{/each}
-	</p>
-{/if}
+	{#if $Fold && $Fold.file_description}
+		<p>description: <span class="value">{$Fold.file_description}</span></p>
+	{/if}
 
-<!-- <hr /> -->
+	{#if $Fold && $Fold.file_classes}
+		<p>
+			file classes:
+			{#each $Fold.file_classes as str}
+				<span class="pill">{str}</span>
+			{/each}
+		</p>
+	{/if}
 
-<!--
-{#if $Fold.file_frames}
-	<p>frames: <span class="value">{FOLD.file_frames.length}</span></p>
-{/if}
- -->
+	<!-- <hr /> -->
 
-<!-- {#if frame.frame_title}
-	<p>title: <span class="value">{frame.frame_title}</span></p>
-{/if}
+	<!--
+	{#if $Fold.file_frames}
+		<p>frames: <span class="value">{FOLD.file_frames.length}</span></p>
+	{/if}
+	 -->
 
-{#if frame.frame_author}
-	<p>author: <span class="value">{frame.frame_author}</span></p>
-{/if}
+	<!-- {#if frame.frame_title}
+		<p>title: <span class="value">{frame.frame_title}</span></p>
+	{/if}
 
-{#if frame.frame_description}
-	<p>description: <span class="value">{frame.frame_description}</span></p>
-{/if}
+	{#if frame.frame_author}
+		<p>author: <span class="value">{frame.frame_author}</span></p>
+	{/if}
 
-{#if frame.frame_unit}
-	<p>unit: <span class="value">{frame.frame_unit}</span></p>
-{/if}
+	{#if frame.frame_description}
+		<p>description: <span class="value">{frame.frame_description}</span></p>
+	{/if}
 
-{#if frame.frame_classes}
-	<p>
-		frame classes:
-		{#each frame.frame_classes as str}
-			<span class="pill">{str}</span>
-		{/each}
-	</p>
-{/if}
+	{#if frame.frame_unit}
+		<p>unit: <span class="value">{frame.frame_unit}</span></p>
+	{/if}
 
-{#if frame.frame_attributes}
-	<p>
-		attributes:
-		{#each frame.frame_attributes as str}
-			<span class="pill">{str}</span>
-		{/each}
-	</p>
-{/if}
+	{#if frame.frame_classes}
+		<p>
+			frame classes:
+			{#each frame.frame_classes as str}
+				<span class="pill">{str}</span>
+			{/each}
+		</p>
+	{/if}
 
-{#if frames.length > 1}
-	<p>
-		frame: <span class="value">{selectedFrame+1}/{frames.length}</span>
-	</p>
-	<div>
-		<input type="range" min={0} max={frames.length - 1} step="1" bind:value={selectedFrame}/>
-	</div>
-{/if} -->
+	{#if frame.frame_attributes}
+		<p>
+			attributes:
+			{#each frame.frame_attributes as str}
+				<span class="pill">{str}</span>
+			{/each}
+		</p>
+	{/if}
 
-<!--
-{#if geometryKeys.length}
-	<p>
-		geometry:
-		{#each geometryKeys as key}
-			<span class="pill">{key}</span>
-		{/each}
-	</p>
-{/if}
- -->
-<!--
-{#if orderKeys.length}
-	<p>
-		orders:
-		{#each orderKeys as key}
-			<span class="pill">{key}</span>
-		{/each}
-	</p>
-{/if}
- -->
+	{#if frames.length > 1}
+		<p>
+			frame: <span class="value">{selectedFrame+1}/{frames.length}</span>
+		</p>
+		<div>
+			<input type="range" min={0} max={frames.length - 1} step="1" bind:value={selectedFrame}/>
+		</div>
+	{/if} -->
 
-<!--
-{#if nonSpecKeys.length}
-	<p>
-		non-spec keys:
-		{#each nonSpecKeys as key}
-			<span class="pill warning">{key}</span>
-		{/each}
-	</p>
-{/if} -->
+	<!--
+	{#if geometryKeys.length}
+		<p>
+			geometry:
+			{#each geometryKeys as key}
+				<span class="pill">{key}</span>
+			{/each}
+		</p>
+	{/if}
+	 -->
+	<!--
+	{#if orderKeys.length}
+		<p>
+			orders:
+			{#each orderKeys as key}
+				<span class="pill">{key}</span>
+			{/each}
+		</p>
+	{/if}
+	 -->
 
+	<!--
+	{#if nonSpecKeys.length}
+		<p>
+			non-spec keys:
+			{#each nonSpecKeys as key}
+				<span class="pill warning">{key}</span>
+			{/each}
+		</p>
+	{/if} -->
+
+</div>
 
 <!--
 		keys included
@@ -137,6 +143,13 @@
  -->
 
 <style>
+	div {
+		padding: 1rem;
+		margin: 1rem 0;
+		border: 2px solid #555;
+		border-radius: 0.5rem;
+		background-color: #2b2a33;
+	}
 	p {
 		line-height: 1.5rem;
 		word-break: break-word;

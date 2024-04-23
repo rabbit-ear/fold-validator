@@ -1,13 +1,14 @@
 <script lang="ts">
 	import StylePanel from "./StylePanel.svelte";
-	let showStyle = true;
+	let showPanel = true;
 </script>
 
 <div class="settings">
-	<button on:click={() => showStyle = !showStyle}>
-		<span class={showStyle ? "triangle" : "triangle rotated"}>▼</span>
+	<button class="collapse" on:click={() => showPanel = !showPanel}>
+		<span class={showPanel ? "triangle" : "triangle rotated"}>▼</span>
 	</button>
-	{#if showStyle}
+
+	{#if showPanel}
 		<StylePanel />
 	{/if}
 </div>
@@ -25,7 +26,7 @@
 		border-radius: 0.5rem;
 		border: 1px solid #888;
 	}
-	button {
+	button.collapse {
 		all: unset;
 		width: 100%;
 		border: none;
@@ -35,10 +36,10 @@
 		transition: all 0.2s;
 		border-radius: 0.25rem;
 	}
-	button:hover {
+	button.collapse:hover {
 		color: var(--bright);
 	}
-	button:focus {
+	button.collapse:focus {
 		outline: var(--focus-outline);
 	}
 	span {

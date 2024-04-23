@@ -32,13 +32,6 @@
 	<input type="file" bind:files>
 </div>
 
-<!-- {#if files && files[0]}
-	<p>
-		{files[0].name}
-	</p>
-{/if}
- -->
-
 <style>
 	div {
 		margin: 1rem 0;

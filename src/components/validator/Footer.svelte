@@ -1,5 +1,5 @@
 <div>
-	<p>by Maya</p>
+	<p>by <a href="https://github.com/mayakraft/fold-validator">Maya</a></p>
 	<p><a href="https://github.com/edemaine/fold/">FOLD spec</a></p>
 </div>
 

@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { AppMode } from "../stores/types.ts";
-
 	export let appMode:AppMode = AppMode.Validator;
-
-	const pressValidate = () => { appMode = AppMode.Validator; };
-	const pressView = () => { appMode = AppMode.Viewer; };
 </script>
 
 <div class="header">
@@ -32,13 +28,24 @@
 
 	<div class="right">
 		<p>
-		<button on:click={pressValidate} data-highlighted={appMode === AppMode.Validator}>validate</button> / <button on:click={pressView} data-highlighted={appMode === AppMode.Viewer}>view</button>
+		<button
+			on:click={() => appMode = AppMode.Validator}
+			data-highlighted={appMode === AppMode.Validator}
+			>validate</button>
+		<span>/</span>
+		<button
+			on:click={() => appMode = AppMode.Viewer}
+			data-highlighted={appMode === AppMode.Viewer}
+			>view</button>
 		</p>
 	</div>
 
 </div>
 
 <style>
+	span {
+		margin: 0 0.5rem;
+	}
 	h2, p {
 		color: #ccc;
 	}

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import {
 		type FOLD,
-	} from "rabbit-ear";
+	// } from "rabbit-ear";
+	} from "../../stores/earTypes.ts";
 	import {
 		getStrokeWidth,
 	} from "rabbit-ear/convert/general/svg.js";

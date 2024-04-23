@@ -2,7 +2,8 @@
 	import {
 		type FOLD,
 		type WebGLModel,
-	} from "rabbit-ear";
+	// } from "rabbit-ear";
+	} from "../../stores/earTypes.ts";
 	import {
 		identity4x4,
 		multiplyMatrices4,
@@ -36,6 +37,7 @@
 	import {
 		RenderPerspective,
 		RenderStyle,
+		type GLCanvasUIEvent,
 	} from "../../stores/types.ts";
 	import {
 		FrontColor,
@@ -124,12 +126,11 @@
 	};
 
 	onMount(() => {
-		const init = initializeWebGL(canvas); // initializeWebGL(canvas, 1); // WebGL 1
+		const init = initializeWebGL(canvas); // (canvas, 1); to force WebGL 1
 		gl = init.gl;
 		version = init.version;
 		if (!gl) {
-			const msg = "WebGL is not supported.";
-			return alert(msg);
+			return alert("WebGL is not supported.");
 		}
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -138,13 +139,13 @@
 
 	onDestroy(dealloc);
 
-	const formatEvent = (event: MouseEvent) => {
+	const formatEvent = (event: MouseEvent): GLCanvasUIEvent => {
 		const screenPoint: [number, number] = [event.offsetX, event.offsetY];
 		const vector = vectorFromScreenLocation(screenPoint, canvasSize, projectionMatrix);
 		Object.assign(event, { vector });
 		return event;
 	};
-	const formatTouchEvent = (event: TouchEvent) => {
+	const formatTouchEvent = (event: TouchEvent): GLCanvasUIEvent => {
 		const screenPoint: [number, number] = [event.touches[0].clientX, event.touches[0].clientY];
 		const vector = vectorFromScreenLocation(screenPoint, canvasSize, projectionMatrix);
 		Object.assign(event, { vector });
@@ -173,8 +174,6 @@
 	on:touchmove={touchmove}
 	on:touchend={touchend}
 />
-
-<!-- previously, the second parameter of addEventListener was "false" -->
 
 <style>
 	canvas {

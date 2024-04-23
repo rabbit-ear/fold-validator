@@ -1,4 +1,6 @@
-import { writable } from "svelte/store";
+import {
+	writable,
+} from "svelte/store";
 import {
 	RenderStyle,
 	RenderPerspective,
@@ -30,8 +32,8 @@ export const StrokeWidth = writable(0.0025);
 // opacity of the 3D model
 export const Opacity = writable(1.0);
 
-// the colors of the faces of the 3D model ("foldedForm")
-export const FrontColor = writable("#1177FF"); // #5577ff
+// the colors of the origami model
+export const FrontColor = writable("#1177FF");
 export const BackColor = writable("#ffffff");
 export const CPColor = writable("#ffffff");
 

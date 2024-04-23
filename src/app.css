@@ -26,11 +26,11 @@ h1, h2, h3, h4, h5 { font-weight: bold; }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #26d;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #38f;
 }
 
 body {

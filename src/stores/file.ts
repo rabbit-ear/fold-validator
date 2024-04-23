@@ -1,4 +1,7 @@
-import { type FOLD } from "rabbit-ear";
+import {
+	type FOLD,
+// } from "rabbit-ear";
+} from "./earTypes.ts";
 import {
 	countFrames,
 	flattenFrame,
@@ -45,16 +48,6 @@ export const FileHash = derived<typeof Fold, number>(
 
 export const FrameNum = writable<number>(0);
 
-// file_frames, the first element [0] is the top layer frame itself.
-// even if file_frames does not exist, [0] will be filled.
-export const Frames = derived<typeof Fold, FOLD>(
-	Fold,
-	($Fold) => {
-
-	},
-	({}),
-);
-
 export const FrameCount = derived<typeof Fold, number>(
 	Fold,
 	($Fold) => {
@@ -65,6 +58,21 @@ export const FrameCount = derived<typeof Fold, number>(
 		}
 	},
 	0,
+);
+
+// file_frames, the first element [0] is the top layer frame itself.
+// even if file_frames does not exist, [0] will be filled.
+export const Frames = derived<[typeof Fold, typeof FrameCount], FOLD[]>(
+	[Fold, FrameCount],
+	([$Fold, $FrameCount]) => {
+		try {
+			return Array.from(Array($FrameCount))
+				.map((_, i) => flattenFrame($Fold, i));
+		} catch (error) {
+			return [$Fold];
+		}
+	},
+	[],
 );
 
 FrameCount.subscribe(($FrameCount) => {
