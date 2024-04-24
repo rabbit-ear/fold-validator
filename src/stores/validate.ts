@@ -1,7 +1,6 @@
 import {
 	type FOLD,
-// } from "rabbit-ear";
-} from "./earTypes.ts";
+} from "rabbit-ear/types.js";
 import {
 	get,
 	writable,

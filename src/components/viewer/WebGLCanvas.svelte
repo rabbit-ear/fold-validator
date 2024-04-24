@@ -1,8 +1,7 @@
 <script lang="ts">
 	import {
 		type FOLD,
-	// } from "rabbit-ear";
-	} from "../../stores/earTypes.ts";
+	} from "rabbit-ear/types.js";
 	import {
 		identity4x4,
 	} from "rabbit-ear/math/matrix4.js";

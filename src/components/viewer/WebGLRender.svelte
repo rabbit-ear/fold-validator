@@ -2,8 +2,7 @@
 	import {
 		type FOLD,
 		type WebGLModel,
-	// } from "rabbit-ear";
-	} from "../../stores/earTypes.ts";
+	} from "rabbit-ear/types.js";
 	import {
 		identity4x4,
 		multiplyMatrices4,
