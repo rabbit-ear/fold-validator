@@ -9,9 +9,14 @@ export enum RenderStyle {
 	translucent = "translucent",
 };
 
-export enum AppMode {
-	Validator,
-	Viewer,
+export enum AppScreen {
+	validator = "validator",
+	viewer = "viewer",
+};
+
+export enum ColorMode {
+	dark = "dark",
+	light = "light",
 };
 
 export type GLCanvasUIEvent = (MouseEvent | TouchEvent) & {

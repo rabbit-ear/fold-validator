@@ -2,15 +2,15 @@
 	import {
 		type FOLD,
 	} from "rabbit-ear/types.js";
-	import {
-		identity4x4,
-	} from "rabbit-ear/math/matrix4.js";
 	import WebGLRender from "./WebGLRender.svelte";
 	import {
 		RenderStyle,
 		RenderPerspective,
 		type GLCanvasUIEvent,
 	} from "../../stores/types.ts";
+	import {
+		ViewMatrix,
+	} from "../../stores/view.ts";
 	import {
 		rotateViewMatrix,
 		zoomViewMatrix,
@@ -19,7 +19,6 @@
 	export let graph: FOLD = {};
 	export let perspective: RenderPerspective;
 	export let renderStyle: RenderStyle;
-	export let viewMatrix = [...identity4x4];
 	let prevVector: [number, number]|undefined;
 
 	type DispatchedGLCanvasUIEvent = { detail: GLCanvasUIEvent };
@@ -35,7 +34,7 @@
 		const { point, vector } = detail;
 		const buttons = prevVector ? 1 : 0;
 		if (buttons && prevVector && vector) {
-			viewMatrix = rotateViewMatrix(perspective, viewMatrix, vector, prevVector);
+			$ViewMatrix = rotateViewMatrix(perspective, $ViewMatrix, vector, prevVector);
 			prevVector = vector;
 		}
 	};
@@ -51,7 +50,7 @@
 			const scrollSensitivity = 1 / 100;
 			const delta = -deltaY * scrollSensitivity;
 			if (Math.abs(delta) < 1e-3) { return; }
-			viewMatrix = zoomViewMatrix(perspective, viewMatrix, delta);
+			$ViewMatrix = zoomViewMatrix(perspective, $ViewMatrix, delta);
 		}
 	};
 </script>
@@ -60,7 +59,7 @@
 	{graph}
 	{perspective}
 	{renderStyle}
-	viewMatrix={viewMatrix}
+	viewMatrix={$ViewMatrix}
 	on:press={onPress}
 	on:move={onMove}
 	on:release={onRelease}

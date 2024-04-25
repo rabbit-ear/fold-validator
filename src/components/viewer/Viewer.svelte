@@ -7,7 +7,6 @@
 	import {
 		Perspective,
 		FrameClass,
-		ViewMatrix,
 	} from "../../stores/view.ts";
 </script>
 
@@ -17,7 +16,6 @@
 		graph={$Frame}
 		perspective={$Perspective}
 		renderStyle={$FrameClass}
-		viewMatrix={$ViewMatrix}
 	/>
 </div>
 
@@ -25,6 +23,7 @@
 	/* 3rem is the header height */
 	/* 3px to fix the annoying canvas overspil thing that always seems to happen */
 	div {
+		width: 100%;
 		height: calc(100vh - 3rem - 3px);
 	}
 </style>

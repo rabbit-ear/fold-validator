@@ -11,6 +11,7 @@
 	import {
 		RenderPerspective,
 		RenderStyle,
+		ColorMode,
 	} from "../../stores/types.ts";
 	import {
 		Frame,
@@ -26,6 +27,7 @@
 		Opacity,
 		FrontColor,
 		BackColor,
+		CPColorMode,
 		ShowFoldedCreases,
 		ShowFoldedFaces,
 		ShowFoldedFaceOutlines,
@@ -119,7 +121,20 @@
 	</div>
 
 	{#if $FrameClass === RenderStyle.creasePattern}
-		<h2>stroke width</h2>
+		<div class="radio-row">
+			<button
+				class="radio"
+				on:click={() => $CPColorMode = ColorMode.dark}
+				data-highlighted={$CPColorMode === ColorMode.dark}
+				>dark</button>
+			<button
+				class="radio"
+				on:click={() => $CPColorMode = ColorMode.light}
+				data-highlighted={$CPColorMode === ColorMode.light}
+				>light</button>
+		</div>
+
+	<h2>stroke width</h2>
 		<input
 			type="range"
 			min="1"

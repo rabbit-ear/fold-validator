@@ -2,6 +2,8 @@ import {
 	writable,
 } from "svelte/store";
 import {
+	AppScreen,
+	ColorMode,
 	RenderStyle,
 	RenderPerspective,
 } from "./types.ts";
@@ -10,8 +12,21 @@ import {
 	FrameStyle,
 } from "./file.ts";
 
+// local storage default values
+const DefaultAppScreen = AppScreen[
+	localStorage.getItem("AppScreen") as keyof typeof AppScreen
+];
+const DefaultFrontColor = localStorage.getItem("FrontColor");
+const DefaultBackColor = localStorage.getItem("BackColor");
+const DefaultCPColorMode = ColorMode[
+	localStorage.getItem("CPColorMode") as keyof typeof ColorMode
+];
+
+// which screen are we looking at
+export const Screen = writable<AppScreen>(DefaultAppScreen || AppScreen.validator);
+
 // darkmode or lightmode
-export const ColorMode = writable("dark");
+export const AppColorMode = writable("dark");
 
 // the camera's perspective: "orthographic" or "perspective"
 export const Perspective = writable(RenderPerspective.orthographic);
@@ -33,9 +48,9 @@ export const StrokeWidth = writable(0.0025);
 export const Opacity = writable(1.0);
 
 // the colors of the origami model
-export const FrontColor = writable("#1177FF");
-export const BackColor = writable("#ffffff");
-export const CPColor = writable("#ffffff");
+export const FrontColor = writable<string>(DefaultFrontColor || "#1177FF");
+export const BackColor = writable<string>(DefaultBackColor || "#ffffff");
+export const CPColorMode = writable<string>(DefaultCPColorMode || ColorMode.dark);
 
 // show/hide things
 export const ShowFoldedCreases = writable(false);
@@ -57,6 +72,10 @@ Frame.subscribe((_) => {
 	ViewMatrix.set([...GL_IDENTITY]);
 });
 
+Perspective.subscribe((_) => {
+	ViewMatrix.set([...GL_IDENTITY]);
+});
+
 FrameStyle.subscribe(({ isFolded, hasOrders }) => {
 	Perspective.set(isFolded
 		? RenderPerspective.perspective
@@ -69,3 +88,10 @@ FrameStyle.subscribe(({ isFolded, hasOrders }) => {
 		FrameClass.set(RenderStyle.creasePattern);
 	}
 });
+
+// local storage
+
+Screen.subscribe(value => localStorage.setItem("AppScreen", value));
+FrontColor.subscribe(value => localStorage.setItem("FrontColor", value));
+BackColor.subscribe(value => localStorage.setItem("BackColor", value));
+CPColorMode.subscribe(value => localStorage.setItem("CPColorMode", value));

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AppMode } from "../stores/types.ts";
-	export let appMode:AppMode = AppMode.Validator;
+	import { AppScreen } from "../stores/types.ts";
+	import { Screen } from "../stores/view.ts";
 </script>
 
 <div class="header">
@@ -29,13 +29,13 @@
 	<div class="right">
 		<p>
 		<button
-			on:click={() => appMode = AppMode.Validator}
-			data-highlighted={appMode === AppMode.Validator}
+			on:click={() => $Screen = AppScreen.validator}
+			data-highlighted={$Screen === AppScreen.validator}
 			>validate</button>
 		<span>/</span>
 		<button
-			on:click={() => appMode = AppMode.Viewer}
-			data-highlighted={appMode === AppMode.Viewer}
+			on:click={() => $Screen = AppScreen.viewer}
+			data-highlighted={$Screen === AppScreen.viewer}
 			>view</button>
 		</p>
 	</div>

@@ -3,17 +3,16 @@
 	import Header from "./Header.svelte";
 	import Validator from "./validator/Validator.svelte";
 	import Viewer from "./viewer/Viewer.svelte";
-	import { AppMode } from "../stores/types.ts";
-
-	let appMode:AppMode = AppMode.Validator;
+	import { AppScreen } from "../stores/types.ts";
+	import { Screen } from "../stores/view.ts";
 </script>
 
 <main>
 	<DragAndDrop />
-	<Header bind:appMode={appMode} />
-	{#if appMode === AppMode.Validator}
+	<Header />
+	{#if $Screen === AppScreen.validator}
 		<Validator />
-	{:else if appMode === AppMode.Viewer}
+	{:else if $Screen === AppScreen.viewer}
 		<Viewer />
 	{:else}
 		<div></div>

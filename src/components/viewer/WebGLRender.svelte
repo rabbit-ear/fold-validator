@@ -1,5 +1,10 @@
 <script lang="ts">
 	import {
+		onMount,
+		onDestroy,
+		createEventDispatcher,
+	} from "svelte";
+	import {
 		type FOLD,
 		type WebGLModel,
 	} from "rabbit-ear/types.js";
@@ -7,11 +12,6 @@
 		identity4x4,
 		multiplyMatrices4,
 	} from "rabbit-ear/math/matrix4.js";
-	import {
-		onMount,
-		onDestroy,
-		createEventDispatcher,
-	} from "svelte";
 	import {
 		initializeWebGL,
 	} from "rabbit-ear/webgl/general/webgl.js";
@@ -31,17 +31,22 @@
 		deallocModel,
 	} from "rabbit-ear/webgl/general/model.js";
 	import {
+		dark,
+		light,
+	} from "rabbit-ear/webgl/general/colors.js";
+	import {
 		vectorFromScreenLocation,
 	} from "./general.ts";
 	import {
 		RenderPerspective,
 		RenderStyle,
+		ColorMode,
 		type GLCanvasUIEvent,
 	} from "../../stores/types.ts";
 	import {
 		FrontColor,
 		BackColor,
-		CPColor,
+		CPColorMode,
 		LayerNudge,
 		StrokeWidth,
 		ShowFoldedFaceOutlines,
@@ -75,16 +80,13 @@
 		frontColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $FrontColor,
 		backColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $BackColor,
 		outlineColor: renderStyle === RenderStyle.translucent ? "white" : "black",
-		cpColor: $CPColor,
+		cpColor: $CPColorMode === ColorMode.dark ? "#121212" : "white",
 		strokeWidth: $StrokeWidth,
 		opacity: renderStyle === RenderStyle.translucent ? 0.25 : 1,
 	};
 
 	$: programOptions = {
-		B: [0.5, 0.5, 0.5],
-		b: [0.5, 0.5, 0.5],
-		F: [0.3, 0.3, 0.3],
-		f: [0.3, 0.3, 0.3],
+		...($CPColorMode === ColorMode.dark ? dark : light),
 		layerNudge: $LayerNudge,
 		outlines: $ShowFoldedFaceOutlines,
 		edges: $ShowFoldedCreases,
