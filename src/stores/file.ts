@@ -17,36 +17,56 @@ import {
 	hashCode,
 } from "../graph/hashCode.ts";
 
-export const FileString = writable<string|undefined>(undefined);
+/**
+ * @description Literally, just the contents of the `<textarea>` as a string
+ */
+export const FileString = writable<string|undefined>("");
 
-export const Fold = derived<typeof FileString, FOLD>(
+/**
+ * @description The contents of the `<textarea>` string parsed into a JSON.
+ * In the case of a parsing error, undefined.
+ */
+export const Fold = derived<typeof FileString, FOLD|undefined>(
 	FileString,
 	($FileString) => {
 		try {
 			return !$FileString ? undefined : JSON.parse($FileString);
 		} catch (err) {
-			return "";
+			return undefined;
 		}
 	},
 	undefined,
 );
 
+/**
+ * @description A unique hash value for the currently loaded FOLD file
+ * In the case of no file loaded, or an invalid FOLD (string parse resulting
+ * in undefined), the hash value will be -1.
+ */
 export const FileHash = derived<typeof Fold, number>(
 	Fold,
 	($Fold) => {
-		if (!$Fold) { return Math.random(); }
+		if (!$Fold) { return -1; }
 		try {
 			return hashCode(JSON.stringify($Fold))
-			// return hashCode($FileString);
 		} catch (error) {
-			return Math.random();
+			return -1;
 		}
 	},
 	Math.random(),
 );
 
+/**
+ * @description For the Viewer. For a FOLD with multiple frames, this is
+ * the current frame being rendered, chosen by the UI.
+ */
 export const FrameNum = writable<number>(0);
 
+/**
+ * @description For a FOLD with multiple frames this will contain the total
+ * number of frames, or 1 if the FOLD has no file_frames (only one top level),
+ * or, in the case of a bad FOLD file, this will be 0.
+ */
 export const FrameCount = derived<typeof Fold, number>(
 	Fold,
 	($Fold) => {

@@ -13,6 +13,7 @@ import {
 	hashCode,
 } from "../graph/hashCode.ts";
 import {
+	FileString,
 	Fold,
 	Frames,
 	FileHash,
@@ -21,9 +22,24 @@ import {
 // set by validateFOLD()
 export const Errors = writable<string[][]>([]);
 
-export const IsValid = derived<typeof Errors, boolean>(
-	Errors,
-	($Errors) => $Errors.every(arr => arr && arr.length === 0),
+const IsValidJSON = derived<typeof FileString, boolean>(
+	FileString,
+	($FileString) => {
+		try {
+			JSON.parse($FileString!);
+			return true;
+		} catch (err) {
+			return false;
+		}
+	},
+	false,
+);
+
+export const IsValid = derived<[typeof IsValidJSON, typeof Errors], boolean>(
+	[IsValidJSON, Errors],
+	([$IsValidJSON, $Errors]) => (
+		$IsValidJSON && $Errors.every(arr => arr && arr.length === 0)
+	),
 	true,
 );
 
@@ -46,15 +62,30 @@ export const ReportIsValid = derived<[typeof FileHash, typeof ValidationHash], b
 // and validation does not fire after every character update
 export const validateFOLD = () => {
 	const frames:FOLD[] = get(Frames);
-	try {
-		Errors.set(frames.map(validate));
-	} catch (error) {
-		console.log("need to show error");
+
+	// set the errors array
+	if (!get(FileString)) {
+		Errors.set([["empty"]]);
+	} else if (!get(IsValidJSON)) {
+		Errors.set([[
+			"invalid JSON. try:",
+			"https://jsonformatter.curiousconcept.com",
+		]]);
+	} else if (!frames.length) {
+		Errors.set([["no FOLD loaded"]]);
+	} else {
+		try {
+			Errors.set(frames.map(validate));
+		} catch (error) {
+			Errors.set([["unknown error when validating the method"]]);
+		}
 	}
+
 	// update the hash for this validation result
 	try {
 		ValidationHash.set(hashCode(JSON.stringify(get(Fold))));
 	} catch (error) {
-		ValidationHash.set(Math.random());
+		// ValidationHash.set(Math.random());
+		ValidationHash.set(-1);
 	}
 };

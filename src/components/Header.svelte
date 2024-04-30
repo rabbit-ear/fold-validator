@@ -22,7 +22,7 @@
 			FOLD
 		</h2>
 		<p>
-			viewer
+			{$Screen}
 		</p>
 	</div>
 

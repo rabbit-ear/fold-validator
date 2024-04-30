@@ -147,7 +147,9 @@
 		return event;
 	};
 	const formatTouchEvent = (event: TouchEvent): GLCanvasUIEvent => {
-		const screenPoint: [number, number] = [event.touches[0].clientX, event.touches[0].clientY];
+		const screenPoint: [number, number] = event.touches.length
+			? [event.touches[0].clientX, event.touches[0].clientY]
+			: [0, 0];
 		const vector = vectorFromScreenLocation(screenPoint, canvasSize, projectionMatrix);
 		Object.assign(event, { vector });
 		return event;
