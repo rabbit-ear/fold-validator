@@ -1,30 +1,11 @@
 <script lang="ts">
 	import {
-		FileString,
-	} from "../../stores/file.ts";
+		fileDialogDidUpdate,
+	} from "../../general/filemanager.ts";
 
-	let files: FileList;
+	let files: FileList|null|undefined = $state();
 
-	const fileDialogDidLoad = (
-		string: string|ArrayBuffer|null|undefined,
-		filename: string,
-		mimeType: string,
-	) => {
-		if (typeof string === "string") {
-			$FileString = string;
-		}
-	};
-
-	$: if (files) {
-		let mimeType: string, filename: string;
-		const reader = new FileReader();
-		reader.onload = loadEvent => fileDialogDidLoad(loadEvent.target?.result, filename, mimeType);
-		if (files.length) {
-			mimeType = files[0].type;
-			filename = files[0].name;
-			reader.readAsText(files[0]);
-		}
-	}
+	$effect(() => fileDialogDidUpdate(files))
 </script>
 
 <div>

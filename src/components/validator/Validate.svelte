@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { validateFOLD } from "../../stores/validate.ts";
+	import {
+		validateFOLD,
+	} from "../../stores/validate.ts";
 </script>
 
-<button on:click={validateFOLD}>validate</button>
+<button onclick={validateFOLD}>validate</button>
 
 <style>
 	button {

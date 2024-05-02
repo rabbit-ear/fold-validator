@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
-		type FOLD,
-	} from "rabbit-ear/types.js";
+		untrack,
+	} from "svelte";
 	import {
 		getStrokeWidth,
 	} from "rabbit-ear/convert/general/svg.js";
@@ -34,7 +34,7 @@
 		LayerNudge,
 	} from "../../stores/view.ts";
 
-	$: isFolded = (
+	let isFolded = $derived(
 		$FrameClass === RenderStyle.foldedForm
 		|| $FrameClass === RenderStyle.translucent
 	);
@@ -45,29 +45,43 @@
 		}
 	};
 
-	let strokeWidthSlider = 5;
-	$: $StrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
+	let strokeWidthSlider = $state(5);
+	let layerNudgeSlider = $state(6);
 
-	let layerNudgeSlider = 6;
-	$: $LayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
-
-	const updateSliders = (graph: FOLD) => {
-		const bounds = boundingBox(graph);
-		const strokeWidthGuess = bounds && bounds.span
-			? getStrokeWidth(graph, Math.max(...bounds.span))
-			: getStrokeWidth(graph);
-		// invert this: Math.pow(2, strokeWidthSlider) / 1e5;
-		strokeWidthSlider = Math.log2(strokeWidthGuess * 1e5);
+	$effect(() => {
 		$StrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
+	});
+
+	$effect(() => {
+		$LayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
+	});
+
+	$effect(() => {
+		const bounds = boundingBox($Frame);
+		const strokeWidthGuess = bounds && bounds.span
+			? getStrokeWidth($Frame, Math.max(...bounds.span))
+			: getStrokeWidth($Frame);
+
+		//
+		let newStrokeWidth: number = 0;
+		untrack(() => {
+			// invert this: Math.pow(2, strokeWidthSlider) / 1e5;
+			strokeWidthSlider = Math.log2(strokeWidthGuess * 1e5);
+			newStrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
+		});
+		$StrokeWidth = newStrokeWidth;
+
 		// find a decent spacing between layers (LayerNudge)
 		if (bounds && bounds.span) {
 			const maxSpan = Math.max(...bounds.span);
-			layerNudgeSlider = Math.log2((maxSpan * 0.001) * 1e5);
-			$LayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
+			let newLayerNudge: number = 0;
+			untrack(() => {
+				layerNudgeSlider = Math.log2((maxSpan * 0.001) * 1e5);
+				newLayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
+			});
+			$LayerNudge = newLayerNudge;
 		}
-	};
-
-	$: updateSliders($Frame);
+	});
 </script>
 
 <div class="container">
@@ -87,12 +101,12 @@
 	<div class="radio-row">
 		<button
 			class="radio"
-			on:click={() => $Perspective = RenderPerspective.orthographic}
+			onclick={() => $Perspective = RenderPerspective.orthographic}
 			data-highlighted={$Perspective === RenderPerspective.orthographic}
 			>2D</button>
 		<button
 			class="radio"
-			on:click={() => $Perspective = RenderPerspective.perspective}
+			onclick={() => $Perspective = RenderPerspective.perspective}
 			data-highlighted={$Perspective === RenderPerspective.perspective}
 			>3D</button>
 	</div>
@@ -110,12 +124,12 @@
 	<div class="radio-row">
 		<button
 			class="radio"
-			on:click={() => setFrameClassFolded()}
+			onclick={() => setFrameClassFolded()}
 			data-highlighted={isFolded}
 			>folded</button>
 		<button
 			class="radio"
-			on:click={() => $FrameClass = RenderStyle.creasePattern}
+			onclick={() => $FrameClass = RenderStyle.creasePattern}
 			data-highlighted={$FrameClass === RenderStyle.creasePattern}
 			>CP</button>
 	</div>
@@ -124,12 +138,12 @@
 		<div class="radio-row">
 			<button
 				class="radio"
-				on:click={() => $CPColorMode = ColorMode.dark}
+				onclick={() => $CPColorMode = ColorMode.dark}
 				data-highlighted={$CPColorMode === ColorMode.dark}
 				>dark</button>
 			<button
 				class="radio"
-				on:click={() => $CPColorMode = ColorMode.light}
+				onclick={() => $CPColorMode = ColorMode.light}
 				data-highlighted={$CPColorMode === ColorMode.light}
 				>light</button>
 		</div>
@@ -147,12 +161,12 @@
 		<div class="radio-row">
 			<button
 				class="radio"
-				on:click={() => $FrameClass = RenderStyle.foldedForm}
+				onclick={() => $FrameClass = RenderStyle.foldedForm}
 				data-highlighted={$FrameClass !== RenderStyle.translucent}
 				>solid</button>
 			<button
 				class="radio"
-				on:click={() => $FrameClass = RenderStyle.translucent}
+				onclick={() => $FrameClass = RenderStyle.translucent}
 				data-highlighted={$FrameClass === RenderStyle.translucent}
 				>clear</button>
 		</div>

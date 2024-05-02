@@ -16,22 +16,24 @@
 		zoomViewMatrix,
 	} from "../../general/math.ts";
 
-	export let graph: FOLD = {};
-	export let perspective: RenderPerspective;
-	export let renderStyle: RenderStyle;
+	type WebGLCanvasProps = {
+		graph: FOLD,
+		perspective: RenderPerspective,
+		renderStyle: RenderStyle,
+	};
+
+	let { graph, perspective, renderStyle }: WebGLCanvasProps = $props();
 	let prevVector: [number, number]|undefined;
 
-	type DispatchedGLCanvasUIEvent = { detail: GLCanvasUIEvent };
-
-	const onPress = ({ detail }: DispatchedGLCanvasUIEvent) => {
-		detail.preventDefault();
-		const { point, vector } = detail;
+	const onpress = (event: GLCanvasUIEvent) => {
+		event.preventDefault();
+		const { point, vector } = event;
 		prevVector = vector;
 	};
 
-	const onMove = ({ detail }: DispatchedGLCanvasUIEvent) => {
-		detail.preventDefault();
-		const { point, vector } = detail;
+	const onmove = (event: GLCanvasUIEvent) => {
+		event.preventDefault();
+		const { point, vector } = event;
 		const buttons = prevVector ? 1 : 0;
 		if (buttons && prevVector && vector) {
 			$ViewMatrix = rotateViewMatrix(perspective, $ViewMatrix, vector, prevVector);
@@ -39,13 +41,12 @@
 		}
 	};
 
-	const onRelease = () => {
+	const onrelease = () => {
 		prevVector = undefined;
 	};
 
-	const onScroll = ({ detail }: DispatchedGLCanvasUIEvent) => {
-		detail.preventDefault();
-		const { deltaY } = detail;
+	const onscroll = (event: GLCanvasUIEvent) => {
+		const { deltaY } = event;
 		if (deltaY !== undefined) {
 			const scrollSensitivity = 1 / 100;
 			const delta = -deltaY * scrollSensitivity;
@@ -60,8 +61,8 @@
 	{perspective}
 	{renderStyle}
 	viewMatrix={$ViewMatrix}
-	on:press={onPress}
-	on:move={onMove}
-	on:release={onRelease}
-	on:scroll={onScroll}
+	{onpress}
+	{onmove}
+	{onrelease}
+	{onscroll}
 />

@@ -1,75 +1,37 @@
 <script lang="ts">
 	import {
-		FileString,
-	} from "../stores/file.ts";
+		fileDropDidUpdate,
+	} from "../general/filemanager.ts";
 
-	const loadFiles = (event: DragEvent) => {
-		// drag and drop file event object does not contain
-		// the filename, we have to store it here and re-match later.
-		let filename = "";
+	let isHovering = $state(false);
 
-		const fileOnLoad = (event: ProgressEvent<FileReader>) => {
-			if (event.target
-				&& event.target.result
-				&& typeof event.target.result === "string") {
-				$FileString = event.target.result;
-			}
-		};
-
-		if (event.dataTransfer && event.dataTransfer.items) {
-			const filenames = [...event.dataTransfer.files]
-				.map(el => el.name);
-			const transferFile = [...event.dataTransfer.items]
-				.map((item, i) => ({ item, filename: filenames[i] }))
-				.filter(el => el.item.kind === "file")
-				.map(el => ({ ...el, contents: el.item.getAsFile() }))
-				.shift();
-			if (transferFile) {
-				const reader = new FileReader();
-				reader.onload = fileOnLoad;
-				filename = transferFile.filename;
-				if (transferFile.contents) {
-					reader.readAsText(transferFile.contents);
-				}
-				return reader;
-			}
-		}
-	};
-
-	let isHovering = false;
-
-	const dragenter = (e: DragEvent) => {
+	const ondragenter = (e: DragEvent) => {
 		e.preventDefault();
 		isHovering = true;
 	};
 
-	const dragleave = (e: DragEvent) => {
+	const ondragleave = (e: DragEvent) => {
 		e.preventDefault();
 		isHovering = false;
 	};
 
-	const dragover = (e: DragEvent) => {
+	const ondragover = (e: DragEvent) => {
 		e.preventDefault();
 		isHovering = true;
 	};
 
-	const drop = (event: DragEvent) => {
+	const ondrop = (event: DragEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
 		isHovering = false;
-		loadFiles(event);
+		fileDropDidUpdate(event);
 	};
 </script>
 
-<svelte:body
-	on:dragenter={dragenter}
-	on:dragleave={dragleave}
-	on:dragover={dragover}
-	on:drop={drop}
-	/>
+<svelte:body {ondragenter} {ondragleave} {ondragover} {ondrop} />
 
-<div class={isHovering ? "hovering" : ""} />
-<!-- {#if isHovering}<div class="hovering" />{/if} -->
+<div class={isHovering ? "hovering" : ""}></div>
+<!-- {#if isHovering}<div class="hovering"></div>{/if} -->
 
 <style>
 	div {

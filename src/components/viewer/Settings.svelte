@@ -1,10 +1,10 @@
 <script lang="ts">
 	import StylePanel from "./StylePanel.svelte";
-	let showPanel = true;
+	let showPanel = $state(true);
 </script>
 
 <div class="settings">
-	<button class="collapse" on:click={() => showPanel = !showPanel}>
+	<button class="collapse" onclick={() => showPanel = !showPanel}>
 		<span class={showPanel ? "triangle" : "triangle rotated"}>▼</span>
 	</button>
 

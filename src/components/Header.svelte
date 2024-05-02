@@ -40,12 +40,12 @@
 	<div class="right">
 		<p>
 		<button
-			on:click={() => $Screen = AppScreen.validator}
+			onclick={() => $Screen = AppScreen.validator}
 			data-highlighted={$Screen === AppScreen.validator}
 			>validate</button>
 		<span>/</span>
 		<button
-			on:click={() => $Screen = AppScreen.viewer}
+			onclick={() => $Screen = AppScreen.viewer}
 			data-highlighted={$Screen === AppScreen.viewer}
 			>view</button>
 		</p>

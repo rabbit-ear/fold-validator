@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { type FOLD } from "rabbit-ear/types.js";
 	import {
 		Fold,
 		Frames,
@@ -8,108 +9,65 @@
 		NonSpecKeys,
 	} from "../../stores/validate.ts";
 
-	$: hasFrameMetadata = $Frames
-		.map(frame => frame.frame_title
-			|| frame.frame_author
-			|| frame.frame_description
-			|| frame.frame_unit
-			|| frame.frame_classes
-			|| frame.frame_attributes)
-		.map(el => el != null)
-		.reduce((a, b) => a || b, false);
+	const prettyName: {[key: string]: string} = {
+		file_spec: "FOLD spec version",
+		file_title: "title",
+		file_author: "author",
+		file_creator: "creator",
+		file_description: "description",
+		file_classes: "file classes",
+		frame_title: "frame title",
+		frame_author: "frame author",
+		frame_description: "frame description",
+		frame_unit: "unit",
+		frame_classes: "frame classes",
+		frame_attributes: "attributes",
+	};
 
-	$: hasMetadata = $Fold && (
-		$Fold.file_spec
-		|| $Fold.file_title
-		|| $Fold.file_author
-		|| $Fold.file_creator
-		|| $Fold.file_description
-		|| $Fold.file_classes
-		|| hasFrameMetadata
-		|| $NonSpecKeys.length);
+	const hasMetadata = (frame: FOLD) => (Object.keys(frame)
+		.filter(key => prettyName[key] !== undefined)
+		.length > 0);
 </script>
 
-{#if $Fold && $ReportIsValid && hasMetadata}
+{#snippet metaKeyValue({ frame, key }: {key:string,frame:FOLD})}
+	{#if frame && (frame as any)[key] != null}
+		<p>{prettyName[key]}: <span class="value">{(frame as any)[key]}</span></p>
+	{/if}
+{/snippet}
 
-	<div>
-		{#if $Fold.file_spec}
-			<p>FOLD spec version: <span class="value">{$Fold.file_spec}</span></p>
-		{/if}
-
-		{#if $Fold.file_title}
-			<p>title: <span class="value">{$Fold.file_title}</span></p>
-		{/if}
-
-		{#if $Fold.file_author}
-			<p>author: <span class="value">{$Fold.file_author}</span></p>
-		{/if}
-
-		{#if $Fold.file_creator}
-			<p>creator: <span class="value">{$Fold.file_creator}</span></p>
-		{/if}
-
-		{#if $Fold.file_description}
-			<p>description: <span class="value">{$Fold.file_description}</span></p>
-		{/if}
-
-		{#if $Fold.file_classes}
-			<p>
-				file classes:
-				{#each $Fold.file_classes as str}
-					<span class="pill">{str}</span>
-				{/each}
-			</p>
-		{/if}
-
-		{#if $Frames.length}
-			{#each $Frames as frame, i}
-				{#if frame.frame_title
-					|| frame.frame_author
-					|| frame.frame_description
-					|| frame.frame_unit
-					|| frame.frame_classes
-					|| frame.frame_attributes}
-					<p class="italic">Frame {i}</p>
-
-					<ul>
-						{#if frame.frame_title}
-							<li>title: <span class="value">{frame.frame_title}</span></li>
-						{/if}
-
-						{#if frame.frame_author}
-							<li>author: <span class="value">{frame.frame_author}</span></li>
-						{/if}
-
-						{#if frame.frame_description}
-							<li>description: <span class="value">{frame.frame_description}</span></li>
-						{/if}
-
-						{#if frame.frame_unit}
-							<li>unit: <span class="value">{frame.frame_unit}</span></li>
-						{/if}
-
-						{#if frame.frame_classes}
-							<li>
-								frame classes:
-								{#each frame.frame_classes as str}
-									<span class="pill">{str}</span>
-								{/each}
-							</li>
-						{/if}
-
-						{#if frame.frame_attributes}
-							<li>
-								attributes:
-								{#each frame.frame_attributes as str}
-									<span class="pill">{str}</span>
-								{/each}
-							</li>
-						{/if}
-					</ul>
-				{/if}
-
+{#snippet metaKeyArrayValue({ frame, key }: {key:string,frame:FOLD})}
+	{#if frame && (frame as any)[key] != null}
+		<p>
+			{prettyName[key]}:
+			{#each (frame as any)[key] as str}
+				<span class="pill">{str}</span>
 			{/each}
-		{/if}
+		</p>
+	{/if}
+{/snippet}
+
+{#if $Fold && $ReportIsValid && hasMetadata($Fold)}
+	<div class="container">
+		{@render metaKeyValue({ frame: $Fold, key: "file_spec" })}
+		{@render metaKeyValue({ frame: $Fold, key: "file_title" })}
+		{@render metaKeyValue({ frame: $Fold, key: "file_author" })}
+		{@render metaKeyValue({ frame: $Fold, key: "file_creator" })}
+		{@render metaKeyValue({ frame: $Fold, key: "file_description" })}
+		{@render metaKeyArrayValue({ frame: $Fold, key: "file_classes" })}
+
+		{#each $Frames as frame, i}
+			{#if hasMetadata(frame)}
+				<p class="italic">Frame {i}</p>
+				<div class="indent">
+					{@render metaKeyValue({ frame, key: "frame_title" })}
+					{@render metaKeyValue({ frame, key: "frame_author" })}
+					{@render metaKeyValue({ frame, key: "frame_description" })}
+					{@render metaKeyValue({ frame, key: "frame_unit" })}
+					{@render metaKeyArrayValue({ frame, key: "frame_classes" })}
+					{@render metaKeyArrayValue({ frame, key: "frame_attributes" })}
+				</div>
+			{/if}
+		{/each}
 
 		{#if $NonSpecKeys.length}
 			<p>
@@ -121,20 +79,23 @@
 		{/if}
 
 	</div>
-
 {/if}
 
 <style>
-	div {
+	.container {
 		padding: 1rem;
 		margin: 1rem 0;
 		border: 2px solid #555;
 		border-radius: 0.5rem;
 		background-color: #2b2a33;
 	}
-	p, li {
-		line-height: 1.5rem;
+	p {
+		font-size: 1rem;
+		line-height: 1rem;
 		word-break: break-word;
+	}
+	.indent {
+		padding-left: 1rem;
 	}
 	.italic {
 		font-style: italic;
@@ -153,8 +114,5 @@
 	.warning {
 		background-color: #46493c;
 		color: #fb4;
-	}
-	ul {
-		padding-left: 1rem;
 	}
 </style>

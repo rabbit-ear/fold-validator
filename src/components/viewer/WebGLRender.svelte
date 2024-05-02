@@ -1,10 +1,5 @@
 <script lang="ts">
 	import {
-		onMount,
-		onDestroy,
-		createEventDispatcher,
-	} from "svelte";
-	import {
 		type FOLD,
 		type WebGLModel,
 	} from "rabbit-ear/types.js";
@@ -54,26 +49,40 @@
 		ShowFoldedFaces,
 	} from "../../stores/view.js";
 
-	export let graph: FOLD = {};
-	export let fov = 30.25;
-	export let perspective: RenderPerspective = RenderPerspective.orthographic;
-	export let viewMatrix = [...identity4x4];
-	export let renderStyle: RenderStyle;
+	type WebGLRenderProps = {
+		graph: FOLD,
+		perspective: RenderPerspective,
+		renderStyle: RenderStyle,
+		viewMatrix: number[],
+		fov?: number,
+		onpress: Function,
+		onmove: Function,
+		onrelease: Function,
+		onscroll: Function,
+	};
 
-	let gl: WebGLRenderingContext|WebGL2RenderingContext;
-	let version: number;
-	let canvas: HTMLCanvasElement;
-	let models: WebGLModel[] = [];
+	let {
+		graph = {},
+		perspective = RenderPerspective.orthographic,
+		renderStyle = RenderStyle.creasePattern,
+		viewMatrix = [...identity4x4],
+		fov = 30.25,
+		onpress,
+		onmove,
+		onrelease,
+		onscroll,
+	}: WebGLRenderProps = $props();
 
-	let canvasSize: [number, number];
-	$: canvasSize = (canvas
-		? [canvas.clientWidth, canvas.clientHeight]
-		: [1, 1]);
-	$: modelMatrix = makeModelMatrix(graph);
-	$: modelViewMatrix = multiplyMatrices4(viewMatrix, modelMatrix);
-	$: projectionMatrix = makeProjectionMatrix(canvas, perspective, fov);
+	let canvas: HTMLCanvasElement|undefined = $state(undefined);
+	let { gl, version } = $derived(canvas
+		? initializeWebGL(canvas)
+		: ({ gl: undefined, version: 0 }));
+	let canvasSize: [number, number] = $state([1, 1]);
+	let modelMatrix = $derived(makeModelMatrix(graph));
+	let modelViewMatrix = $derived(multiplyMatrices4(viewMatrix, modelMatrix));
+	let projectionMatrix = $derived(makeProjectionMatrix(canvasSize, perspective, fov));
 
-	$: uniformOptions = {
+	let uniformOptions = $derived({
 		projectionMatrix,
 		modelViewMatrix,
 		canvas,
@@ -83,62 +92,35 @@
 		cpColor: $CPColorMode === ColorMode.dark ? "#121212" : "white",
 		strokeWidth: $StrokeWidth,
 		opacity: renderStyle === RenderStyle.translucent ? 0.25 : 1,
-	};
+	});
 
-	$: programOptions = {
+	let programOptions = $derived({
 		...($CPColorMode === ColorMode.dark ? dark : light),
 		layerNudge: $LayerNudge,
 		outlines: $ShowFoldedFaceOutlines,
 		edges: $ShowFoldedCreases,
 		faces: $ShowFoldedFaces,
-	};
-
-	$: uniforms = models.map(model => model.makeUniforms(gl, uniformOptions));
-
-	$: {
-		try {
-			deallocPrograms();
-			models = renderStyle === RenderStyle.creasePattern
-				? creasePattern(gl, version, graph, programOptions)
-				: foldedForm(gl, version, graph, programOptions);
-		} catch (error) { }
-	};
-
-	$: if (gl) {
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		models.forEach((program, i) => drawModel(gl, version, program, uniforms[i]));
-	};
-
-	const deallocPrograms = () => models
-		.forEach(program => deallocModel(gl, program));
-
-	const dealloc = () => {
-		deallocPrograms();
-		// gl = undefined;
-		// version = undefined;
-		// canvas = undefined;
-		models = [];
-	};
-
-	const onResize = () => {
-		if (!canvas) { return; }
-		canvas = canvas;
-		rebuildViewport(gl, canvas);
-	};
-
-	onMount(() => {
-		const init = initializeWebGL(canvas); // (canvas, 1); to force WebGL 1
-		gl = init.gl;
-		version = init.version;
-		if (!gl) {
-			return alert("WebGL is not supported.");
-		}
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-		rebuildViewport(gl, canvas);
 	});
 
-	onDestroy(dealloc);
+	let models: WebGLModel[] = $derived.by(() => {
+		try {
+			if (!gl) { return []; }
+			// deallocModels();
+			return renderStyle === RenderStyle.creasePattern
+				? creasePattern(gl, version, graph, programOptions)
+				: foldedForm(gl, version, graph, programOptions);
+		} catch (error) { return []; }
+	});
+
+	let uniforms = $derived(models.map(model => model.makeUniforms(uniformOptions)));
+
+	const deallocModels = () => models.forEach(model => deallocModel(gl, model));
+
+	const onresize = () => {
+		if (!gl || !canvas) { return; }
+		rebuildViewport(gl, canvas);
+		canvasSize = [canvas.clientWidth, canvas.clientHeight];
+	};
 
 	const formatEvent = (event: MouseEvent): GLCanvasUIEvent => {
 		const screenPoint: [number, number] = [event.offsetX, event.offsetY];
@@ -146,6 +128,7 @@
 		Object.assign(event, { vector });
 		return event;
 	};
+
 	const formatTouchEvent = (event: TouchEvent): GLCanvasUIEvent => {
 		const screenPoint: [number, number] = event.touches.length
 			? [event.touches[0].clientX, event.touches[0].clientY]
@@ -155,28 +138,45 @@
 		return event;
 	};
 
-	const dispatch = createEventDispatcher();
-	const mousedown = (e: MouseEvent) => dispatch("press", formatEvent(e));
-	const mousemove = (e: MouseEvent) => dispatch("move", formatEvent(e));
-	const mouseup = (e: MouseEvent) => dispatch("release", formatEvent(e));
-	const touchstart = (e: TouchEvent) => dispatch("press", formatTouchEvent(e));
-	const touchmove = (e: TouchEvent) => dispatch("move", formatTouchEvent(e));
-	const touchend = (e: TouchEvent) => dispatch("release", formatTouchEvent(e));
-	const wheel = (e: WheelEvent) => dispatch("scroll", e);
+	const onmousedown = (e: MouseEvent) => onpress(formatEvent(e));
+	const onmousemove = (e: MouseEvent) => onmove(formatEvent(e));
+	const onmouseup = (e: MouseEvent) => onrelease(formatEvent(e));
+	const ontouchstart = (e: TouchEvent) => onpress(formatTouchEvent(e));
+	const ontouchmove = (e: TouchEvent) => onmove(formatTouchEvent(e));
+	const ontouchend = (e: TouchEvent) => onrelease(formatTouchEvent(e));
+	const onwheel = (e: WheelEvent) => onscroll(e);
+
+	$effect(() => {
+		if (!gl || !canvas) { return; }
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		rebuildViewport(gl, canvas);
+		canvasSize = [canvas.clientWidth, canvas.clientHeight];
+	});
+
+	$effect(() => {
+		if (gl) {
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			models.forEach((model, i) => drawModel(gl, version, model, uniforms[i]));
+		}
+	});
+
+	$effect(() => {
+		return deallocModels;
+	});
 </script>
 
-<svelte:window on:resize={onResize} />
+<svelte:window {onresize} />
 
 <canvas
 	bind:this={canvas}
-	on:mousedown={mousedown}
-	on:mousemove={mousemove}
-	on:mouseup={mouseup}
-	on:wheel={wheel}
-	on:touchstart={touchstart}
-	on:touchmove={touchmove}
-	on:touchend={touchend}
-/>
+	{onmousedown}
+	{onmousemove}
+	{onmouseup}
+	{onwheel}
+	{ontouchstart}
+	{ontouchmove}
+	{ontouchend}></canvas>
 
 <style>
 	canvas {
