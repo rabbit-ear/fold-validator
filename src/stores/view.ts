@@ -6,7 +6,7 @@ import {
 	ColorMode,
 	RenderStyle,
 	RenderPerspective,
-} from "./types.ts";
+} from "../general/types.ts";
 import {
 	Frame,
 	FrameStyle,

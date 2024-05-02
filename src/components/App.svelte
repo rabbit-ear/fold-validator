@@ -1,9 +1,9 @@
 <script lang="ts">
-  import DragAndDrop from "./DragAndDrop.svelte";
+	import DragAndDrop from "./DragAndDrop.svelte";
 	import Header from "./Header.svelte";
 	import Validator from "./validator/Validator.svelte";
 	import Viewer from "./viewer/Viewer.svelte";
-	import { AppScreen } from "../stores/types.ts";
+	import { AppScreen } from "../general/types.ts";
 	import { Screen } from "../stores/view.ts";
 </script>
 

@@ -7,14 +7,14 @@
 		RenderStyle,
 		RenderPerspective,
 		type GLCanvasUIEvent,
-	} from "../../stores/types.ts";
+	} from "../../general/types.ts";
 	import {
 		ViewMatrix,
 	} from "../../stores/view.ts";
 	import {
 		rotateViewMatrix,
 		zoomViewMatrix,
-	} from "./general.ts";
+	} from "../../general/math.ts";
 
 	export let graph: FOLD = {};
 	export let perspective: RenderPerspective;

@@ -15,7 +15,7 @@ import {
 } from "svelte/store";
 import {
 	hashCode,
-} from "../graph/hashCode.ts";
+} from "../general/hashCode.ts";
 
 /**
  * @description Literally, just the contents of the `<textarea>` as a string

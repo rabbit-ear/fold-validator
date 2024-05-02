@@ -2,22 +2,28 @@ import {
 	type FOLD,
 } from "rabbit-ear/types.js";
 import {
+	foldKeys,
+} from "rabbit-ear/fold/spec.js";
+import {
+	validate,
+} from "rabbit-ear/graph/validate/validate.js";
+import {
 	get,
 	writable,
 	derived,
 } from "svelte/store";
 import {
-	validate,
-} from "rabbit-ear/graph/validate/validate.js";
-import {
 	hashCode,
-} from "../graph/hashCode.ts";
+} from "../general/hashCode.ts";
 import {
 	FileString,
 	Fold,
 	Frames,
 	FileHash,
 } from "./file.ts";
+
+const specKeyLookup: {[key:string]:boolean} = {};
+Object.values(foldKeys).flat().forEach(key => { specKeyLookup[key] = true; });
 
 // set by validateFOLD()
 export const Errors = writable<string[][]>([]);
@@ -89,3 +95,11 @@ export const validateFOLD = () => {
 		ValidationHash.set(-1);
 	}
 };
+
+export const NonSpecKeys = derived<typeof Frames, string[]>(
+	Frames,
+	$Frames => Array.from(new Set($Frames
+		.flatMap(frame => Object.keys(frame))
+		.filter(key => !specKeyLookup[key]))),
+	[],
+);

@@ -1,146 +1,128 @@
-<script>
+<script lang="ts">
 	import {
 		Fold,
+		Frames,
 	} from "../../stores/file.ts";
-	// import {
-	// 	findSpecGeometryKeys,
-	// 	findSpecOrderKeys,
-	// 	findNonSpecKeys,
-	// } from "../../graph/misc";
-	// export let FOLD = {};
-	// export let frames = [];
-	// export let selectedFrame = 0;
-	// let frame = {};
-	// $: frame = frames[selectedFrame];
-	// let nonSpecKeys = [];
-	// $: nonSpecKeys = findNonSpecKeys(frames[selectedFrame]);
-	// let geometryKeys = [];
-	// $: geometryKeys = findSpecGeometryKeys(frames[selectedFrame]);
-	// let orderKeys = [];
-	// $: orderKeys = findSpecOrderKeys(frames[selectedFrame]);
+	import {
+		ReportIsValid,
+		NonSpecKeys,
+	} from "../../stores/validate.ts";
+
+	$: hasFrameMetadata = $Frames
+		.map(frame => frame.frame_title
+			|| frame.frame_author
+			|| frame.frame_description
+			|| frame.frame_unit
+			|| frame.frame_classes
+			|| frame.frame_attributes)
+		.map(el => el != null)
+		.reduce((a, b) => a || b, false);
+
+	$: hasMetadata = $Fold && (
+		$Fold.file_spec
+		|| $Fold.file_title
+		|| $Fold.file_author
+		|| $Fold.file_creator
+		|| $Fold.file_description
+		|| $Fold.file_classes
+		|| hasFrameMetadata
+		|| $NonSpecKeys.length);
 </script>
 
-<div>
-	<h3>file metadata</h3>
+{#if $Fold && $ReportIsValid && hasMetadata}
 
-	{#if $Fold && $Fold.file_spec}
-		<p>FOLD spec version: <span class="value">{$Fold.file_spec}</span></p>
-	{/if}
+	<div>
+		{#if $Fold.file_spec}
+			<p>FOLD spec version: <span class="value">{$Fold.file_spec}</span></p>
+		{/if}
 
-	{#if $Fold && $Fold.file_title}
-		<p>title: <span class="value">{$Fold.file_title}</span></p>
-	{/if}
+		{#if $Fold.file_title}
+			<p>title: <span class="value">{$Fold.file_title}</span></p>
+		{/if}
 
-	{#if $Fold && $Fold.file_author}
-		<p>author: <span class="value">{$Fold.file_author}</span></p>
-	{/if}
+		{#if $Fold.file_author}
+			<p>author: <span class="value">{$Fold.file_author}</span></p>
+		{/if}
 
-	{#if $Fold && $Fold.file_creator}
-		<p>creator: <span class="value">{$Fold.file_creator}</span></p>
-	{/if}
+		{#if $Fold.file_creator}
+			<p>creator: <span class="value">{$Fold.file_creator}</span></p>
+		{/if}
 
-	{#if $Fold && $Fold.file_description}
-		<p>description: <span class="value">{$Fold.file_description}</span></p>
-	{/if}
+		{#if $Fold.file_description}
+			<p>description: <span class="value">{$Fold.file_description}</span></p>
+		{/if}
 
-	{#if $Fold && $Fold.file_classes}
-		<p>
-			file classes:
-			{#each $Fold.file_classes as str}
-				<span class="pill">{str}</span>
+		{#if $Fold.file_classes}
+			<p>
+				file classes:
+				{#each $Fold.file_classes as str}
+					<span class="pill">{str}</span>
+				{/each}
+			</p>
+		{/if}
+
+		{#if $Frames.length}
+			{#each $Frames as frame, i}
+				{#if frame.frame_title
+					|| frame.frame_author
+					|| frame.frame_description
+					|| frame.frame_unit
+					|| frame.frame_classes
+					|| frame.frame_attributes}
+					<p class="italic">Frame {i}</p>
+
+					<ul>
+						{#if frame.frame_title}
+							<li>title: <span class="value">{frame.frame_title}</span></li>
+						{/if}
+
+						{#if frame.frame_author}
+							<li>author: <span class="value">{frame.frame_author}</span></li>
+						{/if}
+
+						{#if frame.frame_description}
+							<li>description: <span class="value">{frame.frame_description}</span></li>
+						{/if}
+
+						{#if frame.frame_unit}
+							<li>unit: <span class="value">{frame.frame_unit}</span></li>
+						{/if}
+
+						{#if frame.frame_classes}
+							<li>
+								frame classes:
+								{#each frame.frame_classes as str}
+									<span class="pill">{str}</span>
+								{/each}
+							</li>
+						{/if}
+
+						{#if frame.frame_attributes}
+							<li>
+								attributes:
+								{#each frame.frame_attributes as str}
+									<span class="pill">{str}</span>
+								{/each}
+							</li>
+						{/if}
+					</ul>
+				{/if}
+
 			{/each}
-		</p>
-	{/if}
+		{/if}
 
-	<!-- <hr /> -->
+		{#if $NonSpecKeys.length}
+			<p>
+				out-of-spec keys found
+				{#each $NonSpecKeys as key}
+					<span class="pill warning">{key}</span>
+				{/each}
+			</p>
+		{/if}
 
-	<!--
-	{#if $Fold.file_frames}
-		<p>frames: <span class="value">{FOLD.file_frames.length}</span></p>
-	{/if}
-	 -->
+	</div>
 
-	<!-- {#if frame.frame_title}
-		<p>title: <span class="value">{frame.frame_title}</span></p>
-	{/if}
-
-	{#if frame.frame_author}
-		<p>author: <span class="value">{frame.frame_author}</span></p>
-	{/if}
-
-	{#if frame.frame_description}
-		<p>description: <span class="value">{frame.frame_description}</span></p>
-	{/if}
-
-	{#if frame.frame_unit}
-		<p>unit: <span class="value">{frame.frame_unit}</span></p>
-	{/if}
-
-	{#if frame.frame_classes}
-		<p>
-			frame classes:
-			{#each frame.frame_classes as str}
-				<span class="pill">{str}</span>
-			{/each}
-		</p>
-	{/if}
-
-	{#if frame.frame_attributes}
-		<p>
-			attributes:
-			{#each frame.frame_attributes as str}
-				<span class="pill">{str}</span>
-			{/each}
-		</p>
-	{/if}
-
-	{#if frames.length > 1}
-		<p>
-			frame: <span class="value">{selectedFrame+1}/{frames.length}</span>
-		</p>
-		<div>
-			<input type="range" min={0} max={frames.length - 1} step="1" bind:value={selectedFrame}/>
-		</div>
-	{/if} -->
-
-	<!--
-	{#if geometryKeys.length}
-		<p>
-			geometry:
-			{#each geometryKeys as key}
-				<span class="pill">{key}</span>
-			{/each}
-		</p>
-	{/if}
-	 -->
-	<!--
-	{#if orderKeys.length}
-		<p>
-			orders:
-			{#each orderKeys as key}
-				<span class="pill">{key}</span>
-			{/each}
-		</p>
-	{/if}
-	 -->
-
-	<!--
-	{#if nonSpecKeys.length}
-		<p>
-			non-spec keys:
-			{#each nonSpecKeys as key}
-				<span class="pill warning">{key}</span>
-			{/each}
-		</p>
-	{/if} -->
-
-</div>
-
-<!--
-		keys included
-		keys excluded
-		non spec keys
- -->
+{/if}
 
 <style>
 	div {
@@ -150,9 +132,12 @@
 		border-radius: 0.5rem;
 		background-color: #2b2a33;
 	}
-	p {
+	p, li {
 		line-height: 1.5rem;
 		word-break: break-word;
+	}
+	.italic {
+		font-style: italic;
 	}
 	.value {
 		font-weight: bold;
@@ -168,5 +153,8 @@
 	.warning {
 		background-color: #46493c;
 		color: #fb4;
+	}
+	ul {
+		padding-left: 1rem;
 	}
 </style>

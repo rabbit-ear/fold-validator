@@ -12,7 +12,7 @@
 		RenderPerspective,
 		RenderStyle,
 		ColorMode,
-	} from "../../stores/types.ts";
+	} from "../../general/types.ts";
 	import {
 		Frame,
 		FrameNum,

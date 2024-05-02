@@ -36,13 +36,13 @@
 	} from "rabbit-ear/webgl/general/colors.js";
 	import {
 		vectorFromScreenLocation,
-	} from "./general.ts";
+	} from "../../general/math.ts";
 	import {
 		RenderPerspective,
 		RenderStyle,
 		ColorMode,
 		type GLCanvasUIEvent,
-	} from "../../stores/types.ts";
+	} from "../../general/types.ts";
 	import {
 		FrontColor,
 		BackColor,

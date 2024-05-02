@@ -40,7 +40,7 @@
 	}
 	.result {
 		font-size: 1.75rem;
-		border-radius: 1rem;
+		border-radius: 2rem;
 		line-height: 2.5rem;
 		padding: 0.5rem 1rem;
 		margin: 0.5rem;

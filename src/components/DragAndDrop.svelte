@@ -85,12 +85,12 @@
 		outline: none;
 		border: 3px solid transparent;
 		background-color: transparent;
-    border-radius: 0.25rem;
-    transition: all 0.15s;
+		border-radius: 0.25rem;
+		transition: all 0.15s;
 	}
 
 	.hovering {
 		background-color: #fb41;
-    border-color: #fb4;
+		border-color: #fb4;
 	}
 </style>

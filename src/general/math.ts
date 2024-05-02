@@ -23,6 +23,26 @@ import {
 const SENSITIVITY = 0.075;
 
 /**
+ * @param {number} n
+ * @param {number} radixPoint
+ */
+export const niceNumber = (n: number, radixPoint: number): string => {
+	const string = n.toFixed(radixPoint);
+	const parsed = parseFloat(string);
+	return parsed === Math.floor(parsed)
+		? `${parsed}`
+		: string;
+}
+
+export const makeViewMatrixFront = () => [
+	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.85, 1,
+];
+
+export const makeViewMatrixBack = () => [
+	-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, -1.85, 1,
+];
+
+/**
  * @description Convert a point on a canvas into a 2D vector in the
  * projection space that points from the center of the canvas
  * to the user-supplied point.

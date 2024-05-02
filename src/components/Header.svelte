@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AppScreen } from "../stores/types.ts";
+	import { AppScreen } from "../general/types.ts";
 	import { Screen } from "../stores/view.ts";
 </script>
 
@@ -7,23 +7,34 @@
 
 	<div class="left">
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-0.04 -0.04 1.08 1.08" stroke-width="0.1" stroke-linecap="round">
-			<g class="creasePattern" stroke="black" fill="white">
-				<polygon points="0,0 1,0 1,1 0,1" class="boundary"/>
-				<path d="M0 1L1 0" class="valley" stroke="#26F" stroke-dasharray="0.1 0.15" stroke-dashoffset="0.095"/>
-				<path d="M0 0L1 0M1 0L1 1M1 1L0 1M0 1L0 0" class="boundary"/>
-			</g>
-			<g class="arrow" stroke-width="0.09" stroke="black">
-				<path class="arrow-tail" stroke="none" d="M0.1,0.2L0.369,0.4L0.4214,0.1Z" visibility="visible"/>
-				<path class="arrow-line" style="fill:none;" d="M0.4,0.25C0.72445,0.29635,0.89635,0.52555,0.85,0.85"/>
-			</g>
+			<path
+				d="M1,0.2C1,0.09 0.91,0 0.8,0L0.2,0C0.09,0 0,0.09 0,0.2L0,0.8C0,0.91 0.09,1 0.2,1L0.8,1C0.91,1 1,0.91 1,0.8L1,0.2Z"
+				fill="white"
+				stroke="black"
+				stroke-width="0.1px" />
+			<line
+				x1="0.19"
+				y1="0.81"
+				x2="0.81"
+				y2="0.19"
+				stroke="#26F"
+				stroke-width="0.14"
+				stroke-dasharray="0.1 0.29"/>
+			<path
+				class="arrow-line"
+				fill="none"
+				stroke-width="0.09"
+				stroke="black"
+				d="M0.4,0.25C0.709,0.3118,0.8618,0.541,0.8,0.85"/>
+			<path
+				class="arrow-tail"
+				stroke="none"
+				fill="black"
+				d="M0.1,0.19L0.36,0.4L0.425,0.1Z" />
 		</svg>
 
-		<h2>
-			FOLD
-		</h2>
-		<p>
-			{$Screen}
-		</p>
+		<h2>FOLD</h2>
+		<p>{$Screen}</p>
 	</div>
 
 	<div class="right">
