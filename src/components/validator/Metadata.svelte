@@ -19,7 +19,7 @@
 		frame_title: "frame title",
 		frame_author: "frame author",
 		frame_description: "frame description",
-		frame_unit: "unit",
+		frame_unit: "units",
 		frame_classes: "frame classes",
 		frame_attributes: "attributes",
 	};
@@ -46,7 +46,7 @@
 	{/if}
 {/snippet}
 
-{#if $Fold && $ReportIsValid && hasMetadata($Fold)}
+{#if $Fold && $ReportIsValid && (hasMetadata($Fold) || $NonSpecKeys.length)}
 	<div class="container">
 		{@render metaKeyValue({ frame: $Fold, key: "file_spec" })}
 		{@render metaKeyValue({ frame: $Fold, key: "file_title" })}

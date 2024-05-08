@@ -13,7 +13,7 @@ npm i
 npm run dev
 ```
 
-However, this requires a nightly build of Rabbit Ear (the current dev branch). You can find the relative path link in `package.json`.
+However, this requires the nightly build of [Rabbit Ear](https://github.com/rabbit-ear/rabbit-ear), the current `dev` branch. You will see the relative path in `package.json`, ensure yours matches. Then this app should build just fine.
 
 # license
 
