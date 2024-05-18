@@ -1,4 +1,5 @@
 <script lang="ts">
+	import earcut from "earcut";
 	import {
 		type FOLD,
 		type WebGLModel,
@@ -21,6 +22,9 @@
 	import {
 		foldedForm,
 	} from "rabbit-ear/webgl/foldedForm/models.js";
+	import {
+		touchIndicators,
+	} from "rabbit-ear/webgl/touches/models.js";
 	import {
 		drawModel,
 		deallocModel,
@@ -81,15 +85,20 @@
 	let modelMatrix = $derived(makeModelMatrix(graph));
 	let modelViewMatrix = $derived(multiplyMatrices4(viewMatrix, modelMatrix));
 	let projectionMatrix = $derived(makeProjectionMatrix(canvasSize, perspective, fov));
+	let cursorScreen: [number, number] = $state([0, 0]);
+	let cursorWorld: [number, number] = $state([0, 0]);
 
 	let uniformOptions = $derived({
 		projectionMatrix,
 		modelViewMatrix,
 		canvas,
+		// // these are only used by touchIndicators
+		// cursorWorld,
+		// cursorScreen,
 		frontColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $FrontColor,
 		backColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $BackColor,
 		outlineColor: renderStyle === RenderStyle.translucent ? "white" : "black",
-		cpColor: $CPColorMode === ColorMode.dark ? "#121212" : "white",
+		cpColor: $CPColorMode === ColorMode.dark ? "#111111" : "white",
 		strokeWidth: $StrokeWidth,
 		opacity: renderStyle === RenderStyle.translucent ? 0.25 : 1,
 	});
@@ -100,6 +109,7 @@
 		outlines: $ShowFoldedFaceOutlines,
 		edges: $ShowFoldedCreases,
 		faces: $ShowFoldedFaces,
+		earcut,
 	});
 
 	let models: WebGLModel[] = $derived.by(() => {
@@ -107,9 +117,17 @@
 			if (!gl) { return []; }
 			// deallocModels();
 			return renderStyle === RenderStyle.creasePattern
-				? creasePattern(gl, version, graph, programOptions)
-				: foldedForm(gl, version, graph, programOptions);
-		} catch (error) { return []; }
+				? [
+					...creasePattern(gl, version, graph, programOptions),
+					// ...touchIndicators(gl, programOptions),
+				] : [
+					...foldedForm(gl, version, graph, programOptions),
+					// ...touchIndicators(gl, programOptions),
+				];
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
 	});
 
 	let uniforms = $derived(models.map(model => model.makeUniforms(uniformOptions)));
@@ -139,7 +157,12 @@
 	};
 
 	const onmousedown = (e: MouseEvent) => onpress(formatEvent(e));
-	const onmousemove = (e: MouseEvent) => onmove(formatEvent(e));
+	const onmousemove = (e: MouseEvent) => {
+		const event = formatEvent(e);
+		cursorScreen = [e.offsetX, e.offsetY];
+		cursorWorld = event.vector ? event.vector : [0, 0];
+		return onmove(event);
+	};
 	const onmouseup = (e: MouseEvent) => onrelease(formatEvent(e));
 	const ontouchstart = (e: TouchEvent) => onpress(formatTouchEvent(e));
 	const ontouchmove = (e: TouchEvent) => onmove(formatTouchEvent(e));
@@ -162,6 +185,7 @@
 	});
 
 	$effect(() => {
+		// return a function to be later called on page deallocation
 		return deallocModels;
 	});
 </script>
