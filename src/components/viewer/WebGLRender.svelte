@@ -51,7 +51,7 @@
 		ShowFoldedFaceOutlines,
 		ShowFoldedCreases,
 		ShowFoldedFaces,
-	} from "../../stores/view.js";
+	} from "../../stores/view.svelte.js";
 
 	type WebGLRenderProps = {
 		graph: FOLD,

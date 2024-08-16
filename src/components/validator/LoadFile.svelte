@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
 		fileDialogDidUpdate,
-	} from "../../general/filemanager.ts";
+	} from "../../general/filemanager.svelte.ts";
 
 	let files: FileList|null|undefined = $state();
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
 		fileDropDidUpdate,
-	} from "../general/filemanager.ts";
+	} from "../general/filemanager.svelte.ts";
 
 	let isHovering = $state(false);
 

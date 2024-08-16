@@ -1,12 +1,12 @@
 <script lang="ts">
 	import {
-		IsValid,
-		ReportIsValid,
-	} from "../../stores/validate.ts";
+		GetIsValid,
+		GetReportIsValid,
+	} from "../../stores/validate.svelte.ts";
 </script>
 
-{#if $ReportIsValid}
-	{#if !$IsValid}
+{#if GetReportIsValid()}
+	{#if !GetIsValid()}
 		<div class="result error">&cross; problems found</div>
 	{:else}
 		<div class="result success">&check; valid</div>

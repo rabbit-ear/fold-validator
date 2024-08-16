@@ -1,19 +1,19 @@
 <script lang="ts">
+	import Effects from "./Effects.svelte";
 	import WebGLCanvas from "./WebGLCanvas.svelte";
 	import Settings from "./Settings.svelte";
-	import {
-		Frame,
-	} from "../../stores/file.ts";
+	import { Frame } from "../../stores/file.svelte.ts";
 	import {
 		Perspective,
 		FrameClass,
-	} from "../../stores/view.ts";
+	} from "../../stores/view.svelte.ts";
 </script>
 
 <div>
+	<Effects />
 	<Settings />
 	<WebGLCanvas
-		graph={$Frame}
+		graph={Frame.value}
 		perspective={$Perspective}
 		renderStyle={$FrameClass}
 	/>

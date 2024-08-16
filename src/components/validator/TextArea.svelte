@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { FileString } from "../../stores/file.ts";
+	import { FileString } from "../../stores/file.svelte.ts";
 </script>
 
 <textarea
 	placeholder="&lcub;&rcub;"
-	bind:value={$FileString}
+	bind:value={FileString.value}
 ></textarea>
 
 <style>

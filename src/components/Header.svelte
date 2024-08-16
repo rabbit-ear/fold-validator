@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AppScreen } from "../general/types.ts";
-	import { Screen } from "../stores/view.ts";
+	import { Screen } from "../stores/view.svelte.ts";
 </script>
 
 <div class="header">

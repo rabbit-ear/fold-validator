@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { type Snippet } from "svelte";
 	import { type FOLD } from "rabbit-ear/types.js";
 	import {
 		Fold,
 		Frames,
-	} from "../../stores/file.ts";
+	} from "../../stores/file.svelte.ts";
 	import {
-		ReportIsValid,
-		NonSpecKeys,
-	} from "../../stores/validate.ts";
+		GetReportIsValid,
+		GetNonSpecKeys,
+	} from "../../stores/validate.svelte.ts";
 
 	const prettyName: {[key: string]: string} = {
 		file_spec: "FOLD spec version",
@@ -29,13 +30,16 @@
 		.length > 0);
 </script>
 
-{#snippet metaKeyValue({ frame, key }: {key:string,frame:FOLD})}
+<!-- : {key:string,frame:FOLD} -->
+<!-- : {key:string,frame:FOLD} -->
+
+{#snippet metaKeyValue({ frame, key })}
 	{#if frame && (frame as any)[key] != null}
 		<p>{prettyName[key]}: <span class="value">{(frame as any)[key]}</span></p>
 	{/if}
 {/snippet}
 
-{#snippet metaKeyArrayValue({ frame, key }: {key:string,frame:FOLD})}
+{#snippet metaKeyArrayValue({ frame, key })}
 	{#if frame && (frame as any)[key] != null}
 		<p>
 			{prettyName[key]}:
@@ -46,16 +50,16 @@
 	{/if}
 {/snippet}
 
-{#if $Fold && $ReportIsValid && (hasMetadata($Fold) || $NonSpecKeys.length)}
+{#if Fold.value && GetReportIsValid() && (hasMetadata(Fold.value) || GetNonSpecKeys().length)}
 	<div class="container">
-		{@render metaKeyValue({ frame: $Fold, key: "file_spec" })}
-		{@render metaKeyValue({ frame: $Fold, key: "file_title" })}
-		{@render metaKeyValue({ frame: $Fold, key: "file_author" })}
-		{@render metaKeyValue({ frame: $Fold, key: "file_creator" })}
-		{@render metaKeyValue({ frame: $Fold, key: "file_description" })}
-		{@render metaKeyArrayValue({ frame: $Fold, key: "file_classes" })}
+		{@render metaKeyValue({ frame: Fold.value, key: "file_spec" })}
+		{@render metaKeyValue({ frame: Fold.value, key: "file_title" })}
+		{@render metaKeyValue({ frame: Fold.value, key: "file_author" })}
+		{@render metaKeyValue({ frame: Fold.value, key: "file_creator" })}
+		{@render metaKeyValue({ frame: Fold.value, key: "file_description" })}
+		{@render metaKeyArrayValue({ frame: Fold.value, key: "file_classes" })}
 
-		{#each $Frames as frame, i}
+		{#each Frames.value as frame, i}
 			{#if hasMetadata(frame)}
 				<p class="italic">Frame {i}</p>
 				<div class="indent">
@@ -69,10 +73,10 @@
 			{/if}
 		{/each}
 
-		{#if $NonSpecKeys.length}
+		{#if GetNonSpecKeys().length}
 			<p>
 				out-of-spec keys found
-				{#each $NonSpecKeys as key}
+				{#each GetNonSpecKeys() as key}
 					<span class="pill warning">{key}</span>
 				{/each}
 			</p>

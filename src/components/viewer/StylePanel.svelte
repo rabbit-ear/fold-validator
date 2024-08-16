@@ -17,7 +17,7 @@
 		Frame,
 		FrameNum,
 		FrameCount,
-	} from "../../stores/file.ts";
+	} from "../../stores/file.svelte.ts";
 	import {
 		Perspective,
 		FOV,
@@ -32,7 +32,7 @@
 		ShowFoldedFaces,
 		ShowFoldedFaceOutlines,
 		LayerNudge,
-	} from "../../stores/view.ts";
+	} from "../../stores/view.svelte.ts";
 
 	let isFolded = $derived(
 		$FrameClass === RenderStyle.foldedForm
@@ -57,10 +57,10 @@
 	});
 
 	$effect(() => {
-		const bounds = boundingBox($Frame);
+		const bounds = boundingBox(Frame.value);
 		const strokeWidthGuess = bounds && bounds.span
-			? getStrokeWidth($Frame, Math.max(...bounds.span))
-			: getStrokeWidth($Frame);
+			? getStrokeWidth(Frame.value, Math.max(...bounds.span))
+			: getStrokeWidth(Frame.value);
 
 		//
 		let newStrokeWidth: number = 0;
@@ -86,14 +86,14 @@
 
 <div class="container">
 
-	{#if $FrameCount > 1}
-		<h2>frame: <span class="value">{$FrameNum+1}/{$FrameCount}</span></h2>
+	{#if FrameCount.value > 1}
+		<h2>frame: <span class="value">{FrameNum.value+1}/{FrameCount.value}</span></h2>
 		<input
 			type="range"
 			min=0
-			max={$FrameCount - 1}
+			max={FrameCount.value - 1}
 			step=1
-			bind:value={$FrameNum}/>
+			bind:value={FrameNum.value}/>
 	{/if}
 
 	<h2>viewport</h2>
@@ -239,8 +239,8 @@
 	{/if}
 
 	{#if isFolded
-		&& $Frame !== undefined
-		&& ($Frame.faceOrders || $Frame.faces_layer)}
+		&& Frame.value !== undefined
+		&& (Frame.value.faceOrders || Frame.value.faces_layer)}
 		<h2>layers</h2>
 		<div>
 			<input

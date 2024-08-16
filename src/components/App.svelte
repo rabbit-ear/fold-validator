@@ -4,7 +4,7 @@
 	import Validator from "./validator/Validator.svelte";
 	import Viewer from "./viewer/Viewer.svelte";
 	import { AppScreen } from "../general/types.ts";
-	import { Screen } from "../stores/view.ts";
+	import { Screen } from "../stores/view.svelte.ts";
 </script>
 
 <main>

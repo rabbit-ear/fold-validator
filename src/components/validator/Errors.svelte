@@ -1,23 +1,24 @@
 <script lang="ts">
 	import {
 		Errors,
-		IsValid,
-		ReportIsValid,
-	} from "../../stores/validate.ts";
+		GetIsValid,
+		GetReportIsValid,
+	} from "../../stores/validate.svelte.ts";
 
 	const formatFrameNumber = (i:number):string => (i === 0
 		? `Frame #0 (top level):`
 		: `Frame #${i}`);
 
 	// &cross; {el}
-	const formatErrors = (errors: string[][]):string => ($Errors
+	const formatErrors = (errors: string[][]):string => (Errors
+		.value
 		.map(array => array.join("\n"))
 		.map((string, i) => `${formatFrameNumber(i)}\n${string}`))
 		.join("\n");
 </script>
 
-{#if $ReportIsValid && !$IsValid}
-	<textarea readonly>{formatErrors($Errors)}</textarea>
+{#if GetReportIsValid() && !GetIsValid()}
+	<textarea readonly>{formatErrors(Errors.value)}</textarea>
 {/if}
 
 <style>

@@ -10,7 +10,7 @@
 	} from "../../general/types.ts";
 	import {
 		ViewMatrix,
-	} from "../../stores/view.ts";
+	} from "../../stores/view.svelte.ts";
 	import {
 		rotateViewMatrix,
 		zoomViewMatrix,

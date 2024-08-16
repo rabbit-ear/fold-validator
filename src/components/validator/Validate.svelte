@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
 		validateFOLD,
-	} from "../../stores/validate.ts";
+	} from "../../stores/validate.svelte.ts";
 </script>
 
 <button onclick={validateFOLD}>validate</button>
