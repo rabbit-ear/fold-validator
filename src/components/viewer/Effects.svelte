@@ -1,8 +1,7 @@
 <script lang="ts">
 	import {
-		Perspective,
-		FrameClass,
-		ViewMatrix,
+		AppSettings,
+		Renderer,
 	} from "../../stores/view.svelte.js";
 	import {
 		Frame,
@@ -19,7 +18,7 @@
 	// 	ViewMatrix.set([...GL_IDENTITY]);
 	// });
 	$effect(() => {
-		if (Frame.value) { ViewMatrix.set([...GL_IDENTITY]); }
+		if (Frame.value) { Renderer.ViewMatrix = [...GL_IDENTITY]; }
 	});
 
 	// FrameStyle.subscribe(({ isFolded, hasOrders }) => {
@@ -34,17 +33,42 @@
 	// 		FrameClass.set(RenderStyle.creasePattern);
 	// 	}
 	// });
+	// $effect(() => {
+	// 	const { isFolded, hasOrders } = FrameStyle.value;
+	// 	Perspective.set(isFolded
+	// 		? RenderPerspective.perspective
+	// 		: RenderPerspective.orthographic);
+	// 	if (isFolded) {
+	// 		FrameClass.set(hasOrders
+	// 			? RenderStyle.foldedForm
+	// 			: RenderStyle.translucent);
+	// 	} else {
+	// 		FrameClass.set(RenderStyle.creasePattern);
+	// 	}
+	// });
 	$effect(() => {
 		const { isFolded, hasOrders } = FrameStyle.value;
-		Perspective.set(isFolded
+		Renderer.Perspective = (isFolded
 			? RenderPerspective.perspective
 			: RenderPerspective.orthographic);
 		if (isFolded) {
-			FrameClass.set(hasOrders
+			Renderer.FrameClass = (hasOrders
 				? RenderStyle.foldedForm
 				: RenderStyle.translucent);
 		} else {
-			FrameClass.set(RenderStyle.creasePattern);
+			Renderer.FrameClass = (RenderStyle.creasePattern);
 		}
 	});
+
+	// local storage
+
+	$effect(() => localStorage.setItem("AppScreen", AppSettings.Screen));
+	$effect(() => localStorage.setItem("FrontColor", Renderer.FrontColor));
+	$effect(() => localStorage.setItem("BackColor", Renderer.BackColor));
+	$effect(() => localStorage.setItem("CPColorMode", Renderer.CPColorMode));
+
+	// Screen.subscribe((value) => localStorage.setItem("AppScreen", value));
+	// FrontColor.subscribe((value) => localStorage.setItem("FrontColor", value));
+	// BackColor.subscribe((value) => localStorage.setItem("BackColor", value));
+	// CPColorMode.subscribe((value) => localStorage.setItem("CPColorMode", value));
 </script>

@@ -3,16 +3,18 @@
 	import Header from "./Header.svelte";
 	import Validator from "./validator/Validator.svelte";
 	import Viewer from "./viewer/Viewer.svelte";
+	import Effects from "./Effects.svelte";
 	import { AppScreen } from "../general/types.ts";
-	import { Screen } from "../stores/view.svelte.ts";
+	import { AppSettings } from "../stores/view.svelte.ts";
 </script>
 
 <main>
+	<Effects />
 	<DragAndDrop />
 	<Header />
-	{#if $Screen === AppScreen.validator}
+	{#if AppSettings.Screen === AppScreen.validator}
 		<Validator />
-	{:else if $Screen === AppScreen.viewer}
+	{:else if AppSettings.Screen === AppScreen.viewer}
 		<Viewer />
 	{:else}
 		<div></div>

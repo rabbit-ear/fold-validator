@@ -135,20 +135,6 @@ export const Frames = (() => {
   };
 })();
 
-// FrameCount.subscribe(($FrameCount) => {
-// 	if ($FrameCount === 0) { return; }
-// 	if ($FrameCount <= get(FrameNum)) {
-// 		FrameNum.set($FrameCount - 1);
-// 	}
-// });
-// todo this might not work. needs testing
-// $effect(() => {
-// 	if (FrameCount === 0) { return; }
-// 	if (FrameCount <= FrameNum) {
-// 		FrameNum = FrameCount - 1;
-// 	}
-// });
-
 export const Frame = (() => {
   const value = $derived.by<FOLD>(() => {
     try {

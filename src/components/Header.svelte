@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AppScreen } from "../general/types.ts";
-	import { Screen } from "../stores/view.svelte.ts";
+	import { AppSettings } from "../stores/view.svelte.ts";
 </script>
 
 <div class="header">
@@ -34,19 +34,19 @@
 		</svg>
 
 		<h2>FOLD</h2>
-		<p>{$Screen}</p>
+		<p>{AppSettings.Screen}</p>
 	</div>
 
 	<div class="right">
 		<p>
 		<button
-			onclick={() => $Screen = AppScreen.validator}
-			data-highlighted={$Screen === AppScreen.validator}
+			onclick={() => AppSettings.Screen = AppScreen.validator}
+			data-highlighted={AppSettings.Screen === AppScreen.validator}
 			>validate</button>
 		<span>/</span>
 		<button
-			onclick={() => $Screen = AppScreen.viewer}
-			data-highlighted={$Screen === AppScreen.viewer}
+			onclick={() => AppSettings.Screen = AppScreen.viewer}
+			data-highlighted={AppSettings.Screen === AppScreen.viewer}
 			>view</button>
 		</p>
 	</div>

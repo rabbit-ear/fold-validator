@@ -3,10 +3,7 @@
 	import WebGLCanvas from "./WebGLCanvas.svelte";
 	import Settings from "./Settings.svelte";
 	import { Frame } from "../../stores/file.svelte.ts";
-	import {
-		Perspective,
-		FrameClass,
-	} from "../../stores/view.svelte.ts";
+	import { Renderer } from "../../stores/view.svelte.ts";
 </script>
 
 <div>
@@ -14,8 +11,8 @@
 	<Settings />
 	<WebGLCanvas
 		graph={Frame.value}
-		perspective={$Perspective}
-		renderStyle={$FrameClass}
+		perspective={Renderer.Perspective}
+		renderStyle={Renderer.FrameClass}
 	/>
 </div>
 

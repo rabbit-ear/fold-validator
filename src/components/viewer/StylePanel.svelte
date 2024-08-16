@@ -1,13 +1,7 @@
 <script lang="ts">
-	import {
-		untrack,
-	} from "svelte";
-	import {
-		getStrokeWidth,
-	} from "rabbit-ear/convert/general/svg.js";
-	import {
-		boundingBox,
-	} from "rabbit-ear/graph/boundary.js";
+	import { untrack } from "svelte";
+	import { getStrokeWidth } from "rabbit-ear/convert/general/svg.js";
+	import { boundingBox } from "rabbit-ear/graph/boundary.js";
 	import {
 		RenderPerspective,
 		RenderStyle,
@@ -18,30 +12,16 @@
 		FrameNum,
 		FrameCount,
 	} from "../../stores/file.svelte.ts";
-	import {
-		Perspective,
-		FOV,
-		FlipCameraZ,
-		FrameClass,
-		StrokeWidth,
-		Opacity,
-		FrontColor,
-		BackColor,
-		CPColorMode,
-		ShowFoldedCreases,
-		ShowFoldedFaces,
-		ShowFoldedFaceOutlines,
-		LayerNudge,
-	} from "../../stores/view.svelte.ts";
+	import { Renderer } from "../../stores/view.svelte.ts";
 
 	let isFolded = $derived(
-		$FrameClass === RenderStyle.foldedForm
-		|| $FrameClass === RenderStyle.translucent
+		Renderer.FrameClass === RenderStyle.foldedForm
+		|| Renderer.FrameClass === RenderStyle.translucent
 	);
 
 	const setFrameClassFolded = () => {
-		if ($FrameClass === RenderStyle.creasePattern) {
-			$FrameClass = RenderStyle.foldedForm;
+		if (Renderer.FrameClass === RenderStyle.creasePattern) {
+			Renderer.FrameClass = RenderStyle.foldedForm;
 		}
 	};
 
@@ -49,11 +29,11 @@
 	let layerNudgeSlider = $state(6);
 
 	$effect(() => {
-		$StrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
+		Renderer.StrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
 	});
 
 	$effect(() => {
-		$LayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
+		Renderer.LayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
 	});
 
 	$effect(() => {
@@ -69,7 +49,7 @@
 			strokeWidthSlider = Math.log2(strokeWidthGuess * 1e5);
 			newStrokeWidth = Math.pow(2, strokeWidthSlider) / 1e5;
 		});
-		$StrokeWidth = newStrokeWidth;
+		Renderer.StrokeWidth = newStrokeWidth;
 
 		// find a decent spacing between layers (LayerNudge)
 		if (bounds && bounds.span) {
@@ -79,7 +59,7 @@
 				layerNudgeSlider = Math.log2((maxSpan * 0.001) * 1e5);
 				newLayerNudge = Math.pow(2, layerNudgeSlider) / 1e6;
 			});
-			$LayerNudge = newLayerNudge;
+			Renderer.LayerNudge = newLayerNudge;
 		}
 	});
 </script>
@@ -101,13 +81,13 @@
 	<div class="radio-row">
 		<button
 			class="radio"
-			onclick={() => $Perspective = RenderPerspective.orthographic}
-			data-highlighted={$Perspective === RenderPerspective.orthographic}
+			onclick={() => Renderer.Perspective = RenderPerspective.orthographic}
+			data-highlighted={Renderer.Perspective === RenderPerspective.orthographic}
 			>2D</button>
 		<button
 			class="radio"
-			onclick={() => $Perspective = RenderPerspective.perspective}
-			data-highlighted={$Perspective === RenderPerspective.perspective}
+			onclick={() => Renderer.Perspective = RenderPerspective.perspective}
+			data-highlighted={Renderer.Perspective === RenderPerspective.perspective}
 			>3D</button>
 	</div>
 
@@ -129,22 +109,22 @@
 			>folded</button>
 		<button
 			class="radio"
-			onclick={() => $FrameClass = RenderStyle.creasePattern}
-			data-highlighted={$FrameClass === RenderStyle.creasePattern}
+			onclick={() => Renderer.FrameClass = RenderStyle.creasePattern}
+			data-highlighted={Renderer.FrameClass === RenderStyle.creasePattern}
 			>CP</button>
 	</div>
 
-	{#if $FrameClass === RenderStyle.creasePattern}
+	{#if Renderer.FrameClass === RenderStyle.creasePattern}
 		<div class="radio-row">
 			<button
 				class="radio"
-				onclick={() => $CPColorMode = ColorMode.dark}
-				data-highlighted={$CPColorMode === ColorMode.dark}
+				onclick={() => Renderer.CPColorMode = ColorMode.dark}
+				data-highlighted={Renderer.CPColorMode === ColorMode.dark}
 				>dark</button>
 			<button
 				class="radio"
-				onclick={() => $CPColorMode = ColorMode.light}
-				data-highlighted={$CPColorMode === ColorMode.light}
+				onclick={() => Renderer.CPColorMode = ColorMode.light}
+				data-highlighted={Renderer.CPColorMode === ColorMode.light}
 				>light</button>
 		</div>
 
@@ -161,13 +141,13 @@
 		<div class="radio-row">
 			<button
 				class="radio"
-				onclick={() => $FrameClass = RenderStyle.foldedForm}
-				data-highlighted={$FrameClass !== RenderStyle.translucent}
+				onclick={() => Renderer.FrameClass = RenderStyle.foldedForm}
+				data-highlighted={Renderer.FrameClass !== RenderStyle.translucent}
 				>solid</button>
 			<button
 				class="radio"
-				onclick={() => $FrameClass = RenderStyle.translucent}
-				data-highlighted={$FrameClass === RenderStyle.translucent}
+				onclick={() => Renderer.FrameClass = RenderStyle.translucent}
+				data-highlighted={Renderer.FrameClass === RenderStyle.translucent}
 				>clear</button>
 		</div>
 
@@ -177,13 +157,13 @@
 				type="color"
 				id="color-paper-front"
 				title="paper-front"
-				bind:value={$FrontColor} />
+				bind:value={Renderer.FrontColor} />
 			<input
 				type="color"
 				id="color-paper-back"
 				title="paper-back"
-				bind:value={$BackColor} />
-			<button class="swap" onclick={() => [$FrontColor, $BackColor] = [$BackColor, $FrontColor]}>
+				bind:value={Renderer.BackColor} />
+			<button class="swap" onclick={() => [Renderer.FrontColor, Renderer.BackColor] = [Renderer.BackColor, Renderer.FrontColor]}>
 				<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
 					<path d="M17.87,54.839C21.262,55.828 29.583,57.569 37.011,56.599C42.415,55.894 47.313,53.752 50.418,49.723C52.556,46.95 53.953,43.241 53.871,38.234C53.866,37.909 53.867,37.312 53.871,36.523L53.906,31.218L43.296,31.151L43.263,36.455C43.257,37.355 43.257,38.036 43.263,38.407C43.296,40.492 42.723,41.969 42.016,43.246C40.918,45.227 38.163,47.804 35.663,49.082C31.976,50.968 25.214,52.638 21.139,52.969C13.82,53.564 12.778,53.354 12.778,53.354L17.87,54.839Z"/>
 					<path d="M29.558,23.098L14.917,46.804L1.054,22.773L29.558,23.098Z"/>
@@ -208,22 +188,22 @@
 			<input
 				type="checkbox"
 				id="checkbox-show-folded-faces"
-				bind:checked={$ShowFoldedFaces} />
+				bind:checked={Renderer.ShowFoldedFaces} />
 			<label for="checkbox-show-folded-faces">faces</label>
 		</div>
 		<div>
 			<input
 				type="checkbox"
 				id="checkbox-show-folded-faces-outlines"
-				bind:checked={$ShowFoldedFaceOutlines}
-				disabled={!$ShowFoldedFaces} />
+				bind:checked={Renderer.ShowFoldedFaceOutlines}
+				disabled={!Renderer.ShowFoldedFaces} />
 			<label for="checkbox-show-folded-faces-outlines">face outlines</label>
 		</div>
 		<div>
 			<input
 				type="checkbox"
 				id="show-folded-creases"
-				bind:checked={$ShowFoldedCreases} />
+				bind:checked={Renderer.ShowFoldedCreases} />
 			<label for="show-folded-creases">creases</label>
 		</div>
 
@@ -235,7 +215,7 @@
 			step="0.01"
 			id="slider-stroke-width"
 			bind:value={strokeWidthSlider}
-			disabled={!$ShowFoldedCreases} />
+			disabled={!Renderer.ShowFoldedCreases} />
 	{/if}
 
 	{#if isFolded
@@ -255,7 +235,7 @@
 			<input
 				type="text"
 				class="long-input"
-				bind:value={$LayerNudge} />
+				bind:value={Renderer.LayerNudge} />
 		</div>
 	{/if}
 </div>

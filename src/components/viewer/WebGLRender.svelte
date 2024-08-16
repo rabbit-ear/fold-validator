@@ -43,14 +43,7 @@
 		type GLCanvasUIEvent,
 	} from "../../general/types.ts";
 	import {
-		FrontColor,
-		BackColor,
-		CPColorMode,
-		LayerNudge,
-		StrokeWidth,
-		ShowFoldedFaceOutlines,
-		ShowFoldedCreases,
-		ShowFoldedFaces,
+		Renderer,
 	} from "../../stores/view.svelte.js";
 
 	type WebGLRenderProps = {
@@ -95,20 +88,20 @@
 		// // these are only used by touchIndicators
 		// cursorWorld,
 		// cursorScreen,
-		frontColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $FrontColor,
-		backColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : $BackColor,
+		frontColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : Renderer.FrontColor,
+		backColor: renderStyle === RenderStyle.translucent ? "#9e9b9b" : Renderer.BackColor,
 		outlineColor: renderStyle === RenderStyle.translucent ? "white" : "black",
-		cpColor: $CPColorMode === ColorMode.dark ? "#111111" : "white",
-		strokeWidth: $StrokeWidth,
+		cpColor: Renderer.CPColorMode === ColorMode.dark ? "#111111" : "white",
+		strokeWidth: Renderer.StrokeWidth,
 		opacity: renderStyle === RenderStyle.translucent ? 0.25 : 1,
 	});
 
 	let programOptions = $derived({
-		...($CPColorMode === ColorMode.dark ? dark : light),
-		layerNudge: $LayerNudge,
-		outlines: $ShowFoldedFaceOutlines,
-		edges: $ShowFoldedCreases,
-		faces: $ShowFoldedFaces,
+		...(Renderer.CPColorMode === ColorMode.dark ? dark : light),
+		layerNudge: Renderer.LayerNudge,
+		outlines: Renderer.ShowFoldedFaceOutlines,
+		edges: Renderer.ShowFoldedCreases,
+		faces: Renderer.ShowFoldedFaces,
 		earcut,
 	});
 

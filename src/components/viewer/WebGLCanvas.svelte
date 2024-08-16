@@ -9,7 +9,7 @@
 		type GLCanvasUIEvent,
 	} from "../../general/types.ts";
 	import {
-		ViewMatrix,
+		Renderer,
 	} from "../../stores/view.svelte.ts";
 	import {
 		rotateViewMatrix,
@@ -36,7 +36,7 @@
 		const { point, vector } = event;
 		const buttons = prevVector ? 1 : 0;
 		if (buttons && prevVector && vector) {
-			$ViewMatrix = rotateViewMatrix(perspective, $ViewMatrix, vector, prevVector);
+			Renderer.ViewMatrix = rotateViewMatrix(perspective, Renderer.ViewMatrix, vector, prevVector);
 			prevVector = vector;
 		}
 	};
@@ -51,7 +51,7 @@
 			const scrollSensitivity = 1 / 100;
 			const delta = -deltaY * scrollSensitivity;
 			if (Math.abs(delta) < 1e-3) { return; }
-			$ViewMatrix = zoomViewMatrix(perspective, $ViewMatrix, delta);
+			Renderer.ViewMatrix = zoomViewMatrix(perspective, Renderer.ViewMatrix, delta);
 		}
 	};
 </script>
@@ -60,7 +60,7 @@
 	{graph}
 	{perspective}
 	{renderStyle}
-	viewMatrix={$ViewMatrix}
+	viewMatrix={Renderer.ViewMatrix}
 	{onpress}
 	{onmove}
 	{onrelease}
