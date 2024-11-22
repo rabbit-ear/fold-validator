@@ -109,7 +109,7 @@
 		try {
 			if (!gl) { return []; }
 			// deallocModels();
-			return renderStyle === RenderStyle.creasePattern
+			const models = renderStyle === RenderStyle.creasePattern
 				? [
 					...creasePattern(gl, version, graph, programOptions),
 					// ...touchIndicators(gl, programOptions),
@@ -117,6 +117,10 @@
 					...foldedForm(gl, version, graph, programOptions),
 					// ...touchIndicators(gl, programOptions),
 				];
+			if (renderStyle === RenderStyle.translucent) {
+				models.forEach(el => { el.flags = []; });
+			}
+			return models;
 		} catch (error) {
 			console.error(error);
 			return [];
