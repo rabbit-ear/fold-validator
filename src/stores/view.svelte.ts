@@ -20,7 +20,7 @@ const DefaultCPColorMode =
 
 export const AppSettings = $state({
   // which screen are we looking at
-  Screen: DefaultAppScreen || AppScreen.validator,
+  Screen: DefaultAppScreen || AppScreen.viewer,
   // darkmode or lightmode
   ColorMode: "dark",
 });

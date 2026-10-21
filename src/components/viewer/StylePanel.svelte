@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from "svelte";
 	import { getStrokeWidth } from "rabbit-ear/convert/general/svg.js";
-	import { boundingBox } from "rabbit-ear/graph/boundary.js";
+	import { boundingBox } from "rabbit-ear/graph/boundary/box.js";
 	import {
 		RenderPerspective,
 		RenderStyle,

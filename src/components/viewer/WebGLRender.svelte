@@ -23,9 +23,6 @@
 		foldedForm,
 	} from "rabbit-ear/webgl/foldedForm/models.js";
 	import {
-		touchIndicators,
-	} from "rabbit-ear/webgl/touches/models.js";
-	import {
 		drawModel,
 		deallocModel,
 	} from "rabbit-ear/webgl/general/model.js";

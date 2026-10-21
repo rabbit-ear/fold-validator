@@ -42,7 +42,7 @@ export const ValidationHash = createSignal<number>(0);
 // this allows us the user to 1.load a file, 2.validate, and 3.modify
 // the textarea file contents, in which case, the validation report disappears
 const ReportIsValid = $derived<boolean>(
-  $state.is(FileHash.value, ValidationHash.value),
+  true
 );
 export const GetReportIsValid = () => ReportIsValid;
 
